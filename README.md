@@ -5,7 +5,7 @@ This project provides a set of Kibana visualizations, machine learning jobs, and
 
 ## Disclaimer
 **There is currently no official support for these visualizations, ML jobs, and dashboards. Use them at your own risk.**
-We highly appreciate any bug reports and pull requests for fixes. Your contributions are valuable to the community and will help improve these tools for everyone.\
+We highly appreciate any bug reports and pull requests for fixes. Your contributions are valuable to the community and will help improve these tools for everyone.
 
 ## RMF Compliance Monitoring
 These tools are primarily designed to assist with the **continuous monitoring** aspects of the RMF. They provide real-time insights into your security posture and help you determine if specific **Control Correlation Identifiers (CCIs)** are being met for each individual component you need to monitor.
@@ -47,8 +47,8 @@ The machine learning jobs are provided in `.txt` files. These contain the API ca
 **To assess if the ML jobs were loaded correctly:**
 
 1.  Navigate to **Machine Learning > Anomaly Detection**.
-2.  You should see the newly created jobs in the list.\
-3.  Verify that the jobs are running and processing data. It may take some time for the jobs to learn the baseline behavior of your data and produce meaningful results.\
+2.  You should see the newly created jobs in the list.
+3.  Verify that the jobs are running and processing data. It may take some time for the jobs to learn the baseline behavior of your data and produce meaningful results.
 
 ***
 
@@ -72,7 +72,7 @@ Below is a description of each CCI covered in this project, what the dashboards 
     * [cite_start]**Events by Module:** The distribution of audit events by the reporting module (e.g., auditbeat, winlogbeat)[cite: 320].
     * [cite_start]**ML - Event Actions with Low Volume:** Identifies specific `event.action` types that are exhibiting anomalously low counts, which could indicate a logging failure[cite: 309].
 
-### AU-4: Audit Log Storage Capacity\
+### AU-4: Audit Log Storage Capacity
 
 * **CCI-001848: Inform organization-defined personnel or roles of an audit logging process failure**
     * **RMF Description:** This control is about ensuring that the actions of individual users can be uniquely traced.
@@ -80,7 +80,7 @@ Below is a description of each CCI covered in this project, what the dashboards 
 * **CCI-001849: Provide a warning to organization-defined personnel, roles, and/or locations within organization-defined time period when allocated audit record storage volume reaches organization-defined percentage of repository maximum audit record storage capacity**
     * **RMF Description:** This control requires the system to provide a warning when the allocated audit record storage volume reaches a certain percentage of the maximum storage capacity.
     * [cite_start]**Dashboard Monitoring:** The dashboard monitors the volume and types of all audited events[cite: 574, 582, 586, 590, 593]. [cite_start]It includes visualizations showing the total number of audited events and the trend of audited events by type[cite: 574, 587]. [cite_start]A machine learning job detects anomalies in the volume and types of audited events, which could indicate that the audit system has been tampered with or that a denial-of-service attack on the audit log is occurring[cite: 578].
-\
+
 ### AU-9: Protection of Audit Information
 
 * **CCI-000162, CCI-000163, CCI-000164, CCI-001494, CCI-001495, CCI-003831, CCI-003832:** These CCIs cover the protection of audit information from unauthorized access, modification, and deletion.
