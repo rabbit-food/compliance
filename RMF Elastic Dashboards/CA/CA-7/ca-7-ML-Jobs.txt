@@ -1,0 +1,544 @@
+PUT _ml/anomaly_detectors/ca-7-cci-000279-report-generation-trend-job
+{
+  "description": "Detects anomalies in the trend of security report generation events, relevant to CCI-000279.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Security Report Generation Count"
+      }
+    ],
+    "influencers": ["user.name", "kibana.report.name", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-000279-report-generation-trend-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-000279-report-generation-trend-job
+{
+  "job_id": "ca-7-cci-000279-report-generation-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:iam AND event.type:access AND event.action:(*report* OR *export* OR *download*)) AND (kibana.report.name:(*security* OR *state* OR *compliance* OR *audit* OR *vulnerability*) OR process.args:(*--output* OR *--format*report* OR *--export*))"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "kibana.report.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-000279-report-generation-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-002087-system-change-events-job
+{
+  "description": "Detects anomalies in system change events over time, relevant to CCI-002087.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "System Change Event Count"
+      }
+    ],
+    "influencers": ["host.name", "user.name", "event.category", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-002087-system-change-events-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-002087-system-change-events-job
+{
+  "job_id": "ca-7-cci-002087-system-change-events-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:package AND event.type:(installation OR deletion OR change)) OR (event.category:service AND event.type:(start OR stop OR change)) OR (event.category:configuration AND event.type:change)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.name": {
+      "type": "keyword"
+    },
+    "user.name": {
+      "type": "keyword"
+    },
+    "event.category": {
+      "type": "keyword"
+    },
+    "event.action": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-002087-system-change-events-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-002088-security-assessment-events-job
+{
+  "description": "Detects anomalies in security assessment events, relevant to CCI-002088.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Security Assessment Event Count"
+      }
+    ],
+    "influencers": ["host.name", "vulnerability.scanner.vendor", "file.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-002088-security-assessment-events-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-002088-security-assessment-events-job
+{
+  "job_id": "ca-7-cci-002088-security-assessment-events-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:vulnerability OR event.module:(nessus OR qualys OR tenable OR lynis OR openscap OR trivy) OR vulnerability.scanner.vendor:* OR file.name:(lynis-report-* OR nessus_report* OR qualys_scan* OR openscap-report* OR trivy-report*))"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.name": {
+      "type": "keyword"
+    },
+    "vulnerability.scanner.vendor": {
+      "type": "keyword"
+    },
+    "file.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-002088-security-assessment-events-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-002090-untriaged-alerts-trend-job
+{
+  "description": "Detects anomalies in the trend of untriaged security alerts, relevant to CCI-002090.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Untriaged Security Alert Count"
+      }
+    ],
+    "influencers": ["kibana.alert.rule.name", "host.name", "user.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-002090-untriaged-alerts-trend-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-002090-untriaged-alerts-trend-job
+{
+  "job_id": "ca-7-cci-002090-untriaged-alerts-trend-job",
+  "indices": [".siem-signal*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.kind:signal AND NOT kibana.case.id:*"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "kibana.alert.rule.name": {
+      "type": "keyword"
+    },
+    "host.name": {
+      "type": "keyword"
+    },
+    "user.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-002090-untriaged-alerts-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003874-software-service-change-trend-job
+{
+  "description": "Detects anomalies in system software and service changes, relevant to CCI-003874.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Software and Service Change Count"
+      }
+    ],
+    "influencers": ["host.name", "package.name", "service.name", "event.action", "event.type"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-003874-software-service-change-trend-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-003874-software-service-change-trend-job
+{
+  "job_id": "ca-7-cci-003874-software-service-change-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:package AND package.name:* AND package.version:*) OR (event.category:service AND service.name:* AND service.state:*)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.name": {
+      "type": "keyword"
+    },
+    "package.name": {
+      "type": "keyword"
+    },
+    "service.name": {
+      "type": "keyword"
+    },
+    "event.action": {
+      "type": "keyword"
+    },
+    "event.type": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-003874-software-service-change-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003875-security-report-execution-job
+{
+  "description": "Detects anomalies in security report execution events, relevant to CCI-003875.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Security Report Execution Count"
+      }
+    ],
+    "influencers": ["user.name", "kibana.report.name", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-003875-security-report-execution-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-003875-security-report-execution-job
+{
+  "job_id": "ca-7-cci-003875-security-report-execution-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.category:iam AND event.type:access AND event.action:(execute_report OR create_report OR generate_report OR run_report) AND kibana.report.name:(*security* OR *compliance* OR *audit* OR *vulnerability* OR *state*)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "kibana.report.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-003875-security-report-execution-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003876-total-security-reports-job
+{
+  "description": "Detects anomalies in the total number of security reports generated, relevant to CCI-003876.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Total Security Reports Generated"
+      }
+    ],
+    "influencers": ["user.name", "kibana.report.name", "host.name", "event.outcome"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-003876-total-security-reports-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-003876-total-security-reports-job
+{
+  "job_id": "ca-7-cci-003876-total-security-reports-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:iam AND event.type:access AND event.action:(*report* OR *export* OR *download*)) AND (kibana.report.name:(*security* OR *state* OR *compliance* OR *audit* OR *vulnerability*) OR process.args:(*--output* OR *--format*report* OR *--export*))"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "kibana.report.name": {
+      "type": "keyword"
+    },
+    "event.outcome": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-003876-total-security-reports-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003877-security-report-generation-status-job
+{
+  "description": "Detects anomalies in the status of security report generation, relevant to CCI-003877.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "by_field_name": "event.outcome",
+        "detector_description": "Security Report Generation Status Count"
+      }
+    ],
+    "influencers": ["kibana.report.name", "user.name", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-003877-security-report-generation-status-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-003877-security-report-generation-status-job
+{
+  "job_id": "ca-7-cci-003877-security-report-generation-status-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.action:(*report* OR *export* OR *download* OR *email*) AND (event.category:iam OR event.module:kibana) AND kibana.report.name:(*security* OR *compliance* OR *state* OR *vulnerability* OR *audit*)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "event.outcome": {
+      "type": "keyword"
+    },
+    "kibana.report.name": {
+      "type": "keyword"
+    },
+    "user.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-003877-security-report-generation-status-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003878-data-source-diversity-trend-job
+{
+  "description": "Detects anomalies in data source diversity over time, relevant to CCI-003878.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "by_field_name": "event.provider", 
+        "detector_description": "Unique Data Source Count"
+      }
+    ],
+    "influencers": ["event.provider"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-003878-data-source-diversity-trend-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-003878-data-source-diversity-trend-job
+{
+  "job_id": "ca-7-cci-003878-data-source-diversity-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.provider:*"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "event.provider": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-003878-data-source-diversity-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003878-os-family-diversity-trend-job
+{
+  "description": "Detects anomalies in OS family diversity over time, relevant to CCI-003878.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "by_field_name": "host.os.family", 
+        "detector_description": "Unique OS Family Count"
+      }
+    ],
+    "influencers": ["host.os.family"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+POST _ml/anomaly_detectors/ca-7-cci-003878-os-family-diversity-trend-job/_open
+PUT _ml/datafeeds/datafeed-ca-7-cci-003878-os-family-diversity-trend-job
+{
+  "job_id": "ca-7-cci-003878-os-family-diversity-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "host.os.family:*"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.os.family": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ca-7-cci-003878-os-family-diversity-trend-job/_start
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-000279-report-generation-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-000279-report-generation-trend-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-002087-system-change-events-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-002087-system-change-events-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-002088-security-assessment-events-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-002088-security-assessment-events-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-002090-untriaged-alerts-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-002090-untriaged-alerts-trend-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003874-software-service-change-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003874-software-service-change-trend-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003875-security-report-execution-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003875-security-report-execution-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003876-total-security-reports-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003876-total-security-reports-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003877-security-report-generation-status-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003877-security-report-generation-status-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003878-data-source-diversity-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003878-data-source-diversity-trend-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003878-os-family-diversity-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003878-os-family-diversity-trend-job?force=true

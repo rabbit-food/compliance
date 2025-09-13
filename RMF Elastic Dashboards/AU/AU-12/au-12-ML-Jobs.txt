@@ -1,0 +1,240 @@
+PUT _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate
+{
+  "description": "Detects anomalies in the rate of audit report generation, relevant to CCI-000169 which requires providing audit reports to designated personnel. [cite: 29, 31]",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Monitors the overall rate of audit report generation."
+      }
+    ],
+    "influencers": ["host.name", "user.name", "process.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf", "au-12"]
+}
+
+POST _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate/_open
+
+PUT _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate
+{
+  "job_id": "au-12-cci-000169-audit-report-generation-rate",
+  "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(process.name: (*report* OR *audit*) AND file.extension: (pdf OR csv OR txt OR xlsx)) OR (event.action: (report_generated OR audit_review_completed))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate/_start?start=0
+
+---
+
+PUT _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change
+{
+  "description": "Detects rare audit policy or configuration change events. This is critical for CCI-000172, which requires adjusting audit levels in response to risk. [cite: 64, 83]",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "event.action",
+        "detector_description": "Finds rare configuration change actions, such as updating a trail or modifying an audit rule file."
+      }
+    ],
+    "influencers": ["host.name", "user.name", "process.name", "process.command_line", "file.path"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf", "au-12"]
+}
+
+POST _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change/_open
+
+PUT _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change
+{
+  "job_id": "au-12-cci-000172-rare-audit-config-change",
+  "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((event.category:(configuration OR policy) AND event.type:(change OR creation OR update))) OR (winlog.event_id:(4719 OR 4715 OR 4902 OR 4907 OR 1102)) OR (process.name:(auditctl OR augenrules OR auditpol.exe OR wevtutil.exe OR reg.exe OR sc.exe) AND event.category:process AND event.type:start) OR (process.name:powershell.exe AND process.command_line:(*Set-AuditRule* OR *New-NetFirewallRule* OR *Set-NetFirewallRule* OR *-ExecutionPolicy*)) OR (file.path:(\\\"/etc/audit/rules.d/*\\\" OR \\\"/etc/audit/auditd.conf\\\" OR \\\"/etc/rsyslog.conf\\\" OR \\\"/etc/syslog-ng.conf\\\" OR \\\"*filebeat.yml\\\" OR \\\"*winlogbeat.yml\\\" OR \\\"*auditbeat.yml\\\" OR \\\"*osquery.conf\\\") AND event.action:(file_change OR file_create OR file_modify OR file_rename)) OR (registry.path:(\\\"HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\EventLog\\\\*\\\" OR \\\"HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\EventLog\\\\*\\\" OR \\\"HKLM\\\\SOFTWARE\\\\Elastic\\\\*\\\") AND event.type:(change OR creation OR deletion)) OR ((cloud.service.name:CloudTrail AND event.action:UpdateTrail) OR (cloud.service.name:(\\\"GCP Audit Logs\\\" OR \\\"Azure Activity Logs\\\") AND event.action:(*.update OR *.write OR *.create OR *.patch) AND (resource.type:(*audit* OR *log* OR *monitor*) OR event.summary:(*audit* OR *log* OR *monitor* OR *diagnostic*))))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change/_start?start=0
+
+---
+
+PUT _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift
+{
+  "description": "Detects hosts with an unusual combination of audit modules compared to the population, identifying configuration drift relevant to CCI-001459 (central management of audit records). [cite: 98, 108]",
+  "analysis_config": {
+    "bucket_span": "24h",
+    "detectors": [
+      {
+        "function": "count",
+        "over_field_name": "host.name",
+        "partition_field_name": "event.module",
+        "detector_description": "Models the typical set of audit modules (e.g., auditd, sysmon) for each host and finds hosts that deviate from the population's norm."
+      }
+    ],
+    "influencers": ["host.name", "agent.type"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf", "au-12"]
+}
+
+POST _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift/_open
+
+PUT _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift
+{
+  "job_id": "au-12-cci-001459-audit-configuration-drift",
+  "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.module : (auditd or winlogbeat or sysmon or system or security or file_integrity) or agent.type : (auditbeat or winlogbeat or osquery or elastic-agent or filebeat)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift/_start?start=0
+
+---
+
+PUT _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike
+{
+  "description": "Detects unusual spikes in failed activities, supporting CCI-001910 by helping analysts find inappropriate or unusual activity. [cite: 127, 129]",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "high_count",
+        "detector_description": "Identifies unusually high numbers of failed events."
+      }
+    ],
+    "influencers": ["host.name", "user.name", "source.ip", "process.executable", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf", "au-12"]
+}
+
+POST _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike/_open
+
+PUT _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike
+{
+  "job_id": "au-12-cci-001910-failed-activity-spike",
+  "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.outcome:(failure OR failed) AND ((event.category:(authentication or authorization or configuration or database or driver or file or host or iam or intrusion_detection or network or package or process or registry or session or threat) or event.dataset:(*.audit* or \"osquery.result\" or *.zeek.* or *.suricata.* or \"sysmon.event\" or \"windows.security\" or \"windows.system\" or \"k8s.audit\" or \"crowdstrike.event\" or \"carbonblack.event\"))) and not (winlog.event_id:4768 and winlog.event_data.Status:\"0x18\")"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike/_start?start=0
+
+---
+
+PUT _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host
+{
+  "description": "Detects rare event actions on a per-host basis. Supports on-demand analysis (CCI-000171) and finding unusual activity (CCI-001910). [cite: 45, 122]",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "event.action",
+        "partition_field_name": "host.name",
+        "detector_description": "Identifies event actions that are uncommon for a specific host, highlighting shifts in behavior."
+      }
+    ],
+    "influencers": ["host.name", "user.name", "process.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf", "au-12"]
+}
+
+POST _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host/_open
+
+PUT _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host
+{
+  "job_id": "au-12-cci-000171-001910-rare-event-action-by-host",
+  "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.category:(authentication or authorization or configuration or database or driver or file or host or iam or intrusion_detection or network or package or process or registry or session or threat) or event.dataset:(*.audit* or \"osquery.result\" or *.zeek.* or *.suricata.* or \"sysmon.event\" or \"windows.security\" or \"windows.system\" or \"k8s.audit\" or \"crowdstrike.event\" or \"carbonblack.event\") or event.module:(auditbeat or winlogbeat or filebeat or sysmon or osquery or zeek or suricata or gcp or azure or aws or o365 or okta)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host/_start?start=0
+
+---
+
+DELETE _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate?force=true
+DELETE _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate?force=true
+DELETE _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change?force=true
+DELETE _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change?force=true
+DELETE _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift?force=true
+DELETE _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift?force=true
+DELETE _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike?force=true
+DELETE _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike?force=true
+DELETE _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host?force=true
+DELETE _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host?force=true

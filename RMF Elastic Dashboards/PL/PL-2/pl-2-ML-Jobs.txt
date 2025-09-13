@@ -1,0 +1,102 @@
+PUT _ml/anomaly_detectors/pl-2-cci-003063-unauthorized-plan-access-trend-job
+{
+  "description": "Detects anomalies in the volume of unauthorized access attempts on security and system plans, relevant to CCI-003063. [cite: 1, 12]",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Total unauthorized plan access attempts"
+      }
+    ],
+    "influencers": ["user.name", "host.name", "file.path", "event.outcome"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/pl-2-cci-003063-unauthorized-plan-access-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pl-2-cci-003063-unauthorized-plan-access-trend-job
+{
+  "job_id": "pl-2-cci-003063-unauthorized-plan-access-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((file.path:(*\\\\plans\\\\* OR *\\\\policies\\\\* OR *\\\\procedures\\\\* OR *\\\\baselines\\\\* OR *\\\\diagrams\\\\*) OR file.name:(*plan* OR *policy* OR *procedure* OR *guidance* OR *baseline*)) AND file.extension:(docx OR pdf OR xlsx OR md OR txt OR vsd OR zip)) AND event.category:file AND event.type:access AND NOT user.name:(system OR administrator OR \"NT AUTHORITY\\\\SYSTEM\" OR *_admin OR authorized_plan_editor)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pl-2-cci-003063-unauthorized-plan-access-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/pl-2-cci-003064-unauthorized-plan-modification-trend-job
+{
+  "description": "Detects anomalies in the volume of unauthorized modification attempts on critical plan documents, relevant to CCI-003064. [cite: 17, 31]",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Total unauthorized plan modification attempts"
+      }
+    ],
+    "influencers": ["user.name", "host.name", "process.name", "file.path", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/pl-2-cci-003064-unauthorized-plan-modification-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pl-2-cci-003064-unauthorized-plan-modification-trend-job
+{
+  "job_id": "pl-2-cci-003064-unauthorized-plan-modification-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(file.path:(\"*\\\\plans\\\\*\" OR \"*\\\\documents\\\\*\" OR \"*.plan\" OR \"*.conf\" OR \"*.xml\" OR \"*.yml\" OR \"*.ini\") OR file.extension:(\"plan\" OR \"conf\" OR \"xml\" OR \"yml\" OR \"ini\")) AND event.type:(\"change\" OR \"modification\" OR \"deletion\" OR \"renaming\" OR \"permission_change\") AND NOT (user.name:(*system* OR *administrator* OR \"NT AUTHORITY\\\\SYSTEM\" OR *authorized_admin*) AND event.outcome:success)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pl-2-cci-003064-unauthorized-plan-modification-trend-job/_start
+
+---
+
+### DELETE COMMANDS ###
+# Use these commands to remove the jobs and datafeeds
+
+POST _ml/datafeeds/datafeed-pl-2-cci-003063-unauthorized-plan-access-trend-job/_stop
+DELETE _ml/datafeeds/datafeed-pl-2-cci-003063-unauthorized-plan-access-trend-job
+POST _ml/anomaly_detectors/pl-2-cci-003063-unauthorized-plan-access-trend-job/_close
+DELETE _ml/anomaly_detectors/pl-2-cci-003063-unauthorized-plan-access-trend-job
+
+POST _ml/datafeeds/datafeed-pl-2-cci-003064-unauthorized-plan-modification-trend-job/_stop
+DELETE _ml/datafeeds/datafeed-pl-2-cci-003064-unauthorized-plan-modification-trend-job
+POST _ml/anomaly_detectors/pl-2-cci-003064-unauthorized-plan-modification-trend-job/_close
+DELETE _ml/anomaly_detectors/pl-2-cci-003064-unauthorized-plan-modification-trend-job

@@ -1,0 +1,282 @@
+PUT _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend
+{
+  "description": "Detects hosts sending logs with timestamps not in UTC, which is a potential violation of CCI-000132.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Count of non-UTC events by host",
+        "function": "count",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": ["host.name", "event.timezone"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend
+{
+  "job_id": "au-3-cci-000132-non-utc-timestamps-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.timezone : * and not event.timezone : (\"+00:00\" or \"Z\" or \"UTC\")"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend
+{
+  "description": "Detects an anomalous number of events missing the 'event.outcome' field, relevant to CCI-000134.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Count of events missing 'event.outcome' by host",
+        "function": "count",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": ["host.name", "event.category", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend
+{
+  "job_id": "au-3-cci-000134-missing-event-outcome-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((event.category:(authentication OR process OR file OR network OR iam OR configuration OR policy OR database OR host OR web OR intrusion_detection OR malware OR session OR threat) OR event.type:(access OR change OR creation OR deletion OR error OR start OR end OR info OR installation OR modification OR network OR policy OR process OR protocol OR session OR user OR admin) OR event.dataset:(*.audit OR *.security OR *.events OR *.log OR auditd OR sysmon OR system OR security OR powershell OR osquery OR cloudtrail OR azure.* OR gcp.* OR o365 OR okta OR crowdstrike OR carbonblack OR sentinelone OR suricata OR zeek OR nginx OR apache OR mssql OR mysql OR postgresql OR auditbeat OR winlogbeat OR filebeat))) AND (NOT event.outcome:*)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
+{
+  "description": "Detects an abnormally low count of specific event actions, which may indicate a failure to log required events for CCI-000130.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Low count of events by action type",
+        "function": "low_count",
+        "by_field_name": "event.action"
+      }
+    ],
+    "influencers": ["host.name", "event.action", "event.module"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
+{
+  "job_id": "au-3-cci-000130-low-event-action-volume-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.module: (auditd or auditbeat or sysmon or system or security or powershell or osquery or \"windows\" or \"linux\" or \"aws\" or \"gcp\" or \"azure\") OR event.dataset: (*.log or *.audit or *.security or *.system or *.application or \"cloudtrail\" or \"guardduty\") OR event.category: (authentication or configuration or database or driver or file or host or iam or intrusion_detection or malware or network or package or process or registry or session or threat or web) OR event.type: (access or change or connection or creation or deletion or end or error or group or info or installation or modification or process_started or protocol or start or user)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/au-3-cci-000131-low-log-volume-trend
+{
+  "description": "Detects an anomalous drop in overall audit log volume, which could indicate incomplete records, relevant to CCI-000131.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Low count of total logs by host",
+        "function": "low_count",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": ["host.name", "event.module"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-000131-low-log-volume-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000131-low-log-volume-trend
+{
+  "job_id": "au-3-cci-000131-low-log-volume-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.module:(auditbeat OR winlogbeat OR filebeat OR o365audit OR gcp.audit OR osquery OR suricata OR zeek) OR cloud.service.name:(\"CloudTrail\" OR \"Azure Activity Logs\" OR \"GCP Audit Logs\" OR \"Kubernetes\") OR log.file.path:(\"/var/log/*\" OR \"/var/log/audit/*\" OR \"C:\\\\Windows\\\\System32\\\\winevt\\\\Logs\\\\*\") OR process.name:(auditd OR journald OR rsyslogd OR syslog-ng OR \"Windows Event Log\" OR wevtutil.exe) OR (event.category: * AND event.type: *))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-000131-low-log-volume-trend/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/au-3-cci-000133-missing-user-identity-trend
+{
+  "description": "Detects an anomalous number of events missing user identity information, relevant to CCI-000133.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Count of events missing user identity by host",
+        "function": "count",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": ["host.name", "process.name", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-000133-missing-user-identity-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend
+{
+  "job_id": "au-3-cci-000133-missing-user-identity-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((event.category:(authentication OR process OR file OR iam) OR event.action:(*login* OR *session* OR *sudo* OR *runas* OR *su*)) AND (NOT user.name : * AND NOT user.id : *)) AND NOT (process.name:(kernel OR systemd OR svchost.exe OR services.exe OR lsass.exe OR wininit.exe OR crond OR anacron OR atd OR udevd OR dbus-daemon) OR user.domain:(\"NT AUTHORITY\" OR \"LOCAL SERVICE\" OR \"NETWORK SERVICE\"))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend
+{
+  "description": "Detects events missing organization-defined required fields, as specified in CCI-001487.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Count of events missing required fields by host and category",
+        "function": "count",
+        "partition_field_name": "host.name",
+        "by_field_name": "event.category"
+      }
+    ],
+    "influencers": ["host.name", "event.category", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend
+{
+  "job_id": "au-3-cci-001487-missing-required-fields-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((event.category:authentication OR event.type:access) AND (NOT source.ip:* OR NOT user.name:* OR NOT host.name:*)) OR ((event.category:process AND event.type:(start OR creation)) AND (NOT process.executable:* OR NOT process.command_line:* OR NOT user.name:*)) OR ((event.category:file AND event.type:(creation OR modification OR deletion)) AND (NOT file.path:* OR NOT file.name:* OR NOT user.name:*)) OR ((event.category:network AND event.type:connection) AND (NOT source.ip:* OR NOT destination.ip:* OR NOT destination.port:*)) OR (event.category:registry AND (NOT registry.path:* OR NOT user.name:*)) OR ((event.module:*aws AND event.dataset:*cloudtrail) AND (NOT aws.cloudtrail.event_name:* OR NOT aws.cloudtrail.user_identity.arn:*)) OR ((event.category:iam AND event.type:(user_creation OR group_creation OR policy)) AND (NOT user.name:* OR NOT user.target.name:*))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend/_start?start=now
+
+---
+
+DELETE _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend?force=true
+DELETE _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend?force=true
+DELETE _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-3-cci-000130-

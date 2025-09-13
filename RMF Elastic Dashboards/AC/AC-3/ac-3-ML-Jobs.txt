@@ -1,0 +1,110 @@
+PUT _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend
+{
+  "description": "Detects anomalies in logical access attempts by unauthorized users, aligning with CCI-000213. This job identifies unusual numbers of access attempts from users not on the approved list.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Total count of unauthorized access attempts",
+        "function": "count"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "host.name",
+      "source.ip",
+      "process.name",
+      "event.outcome"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+POST _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend/_open
+PUT _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend
+{
+  "job_id": "ac-3-cci-000213-unauthorized-access-attempts-trend",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.action: (\"session_start\" OR \"user_login\" OR \"user_authentication\" OR \"sudo_start\") OR event.category: (authentication OR session) OR winlog.event_id: (4624 OR 4625 OR 4648 OR 4672)) AND NOT user.name: (*system* OR *administrator* OR \"NT AUTHORITY\\SYSTEM\" OR \"-\" OR *service_account* OR *authorized_user*)"
+          }
+        }
+      ]
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ac-3-access-denial-rate-trend
+{
+  "description": "Monitors for anomalous spikes in access denial events to verify access control enforcement, aligning with AC-3. Partitions anomalies by host to identify specific components with high failure rates.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Count of failed access attempts partitioned by host",
+        "function": "count",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "process.name",
+      "event.action"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+POST _ml/anomaly_detectors/ac-3-access-denial-rate-trend/_open
+PUT _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend
+{
+  "job_id": "ac-3-access-denial-rate-trend",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.outcome:failure AND event.category:(authentication OR iam OR file OR process OR network)"
+          }
+        }
+      ]
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend/_start
+
+---
+
+POST _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend/_stop
+POST _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend/_stop
+
+DELETE _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend?force=true
+DELETE _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend?force=true
+DELETE _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend?force=true
+DELETE _ml/anomaly_detectors/ac-3-access-denial-rate-trend?force=true

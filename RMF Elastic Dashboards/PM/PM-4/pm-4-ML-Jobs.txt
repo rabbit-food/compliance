@@ -1,0 +1,146 @@
+PUT _ml/anomaly_detectors/pm-4-cci-004326-high-vuln-count-host
+{
+  "description": "Detects hosts with an unusually high count of open vulnerabilities, supporting CCI-004326. This helps prioritize systems that pose the most risk. [cite: 5, 15]",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "function": "high_count",
+        "partition_field_name": "host.name",
+        "detector_description": "High count of open vulnerabilities for a host"
+      }
+    ],
+    "influencers": ["host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/pm-4-cci-004326-high-vuln-count-host/_open
+
+PUT _ml/datafeeds/datafeed-pm-4-cci-004326-high-vuln-count-host
+{
+  "job_id": "pm-4-cci-004326-high-vuln-count-host",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "vulnerability.state: \"open\""
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-4-cci-004326-high-vuln-count-host/_start
+
+---
+
+PUT _ml/anomaly_detectors/pm-4-cci-004326-new-critical-high-vuln-spike
+{
+  "description": "Detects unusual spikes in new critical or high severity vulnerabilities per host, supporting CCI-004326. [cite_start]A non-zero or increasing count of these vulnerabilities requires immediate attention. [cite: 9, 11]",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "function": "count",
+        "partition_field_name": "host.name",
+        "by_field_name": "vulnerability.severity",
+        "detector_description": "Count of new critical/high vulnerabilities by host and severity"
+      }
+    ],
+    "influencers": ["host.name", "vulnerability.severity"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/pm-4-cci-004326-new-critical-high-vuln-spike/_open
+
+PUT _ml/datafeeds/datafeed-pm-4-cci-004326-new-critical-high-vuln-spike
+{
+  "job_id": "pm-4-cci-004326-new-critical-high-vuln-spike",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "vulnerability.state: \"open\" AND vulnerability.severity: (critical OR high)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-4-cci-004326-new-critical-high-vuln-spike/_start
+
+---
+
+PUT _ml/anomaly_detectors/pm-4-cci-004326-remediation-rate-per-host
+{
+  "description": "Models the rate of 'open' vs 'fixed' vulnerabilities per host to detect anomalous remediation trends, supporting CCI-004326. [cite_start]This identifies if remediation processes are keeping up with discoveries. [cite: 12, 14]",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "1d",
+    "detectors": [
+      {
+        "function": "count",
+        "partition_field_name": "host.name",
+        "by_field_name": "vulnerability.state",
+        "detector_description": "Count of vulnerabilities by state (open/fixed) per host"
+      }
+    ],
+    "influencers": ["host.name", "vulnerability.state"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/pm-4-cci-004326-remediation-rate-per-host/_open
+
+PUT _ml/datafeeds/datafeed-pm-4-cci-004326-remediation-rate-per-host
+{
+  "job_id": "pm-4-cci-004326-remediation-rate-per-host",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "vulnerability.id: *"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-4-cci-004326-remediation-rate-per-host/_start
+
+---
+
+DELETE _ml/datafeeds/datafeed-pm-4-cci-004326-high-vuln-count-host?force=true
+DELETE _ml/anomaly_detectors/pm-4-cci-004326-high-vuln-count-host?force=true
+DELETE _ml/datafeeds/datafeed-pm-4-cci-004326-new-critical-high-vuln-spike?force=true
+DELETE _ml/anomaly_detectors/pm-4-cci-004326-new-critical-high-vuln-spike?force=true
+DELETE _ml/datafeeds/datafeed-pm-4-cci-004326-remediation-rate-per-host?force=true
+DELETE _ml/anomaly_detectors/pm-4-cci-004326-remediation-rate-per-host?force=true

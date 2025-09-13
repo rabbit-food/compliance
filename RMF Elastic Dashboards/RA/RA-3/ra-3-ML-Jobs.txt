@@ -1,0 +1,243 @@
+PUT _ml/anomaly_detectors/ra-3-cci-001048-high-severity-events-trend
+{
+  "description": "Detects an unusual number of high-severity events (failures, alerts, signals), which can indicate an increased likelihood of harm. Relevant to CCI-001048.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Unusually high count of severe events per host",
+        "function": "high_count",
+        "over_field_name": "host.name"
+      }
+    ],
+    "influencers": ["user.name", "process.name", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ra-3-cci-001048-high-severity-events-trend/_open
+
+PUT _ml/datafeeds/datafeed-ra-3-cci-001048-high-severity-events-trend
+{
+  "job_id": "ra-3-cci-001048-high-severity-events-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((event.kind:(alert OR signal) OR (event.category:(authentication OR process OR file OR network OR database OR intrusion_detection) AND event.outcome:failure)) AND event.severity:(high OR critical))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ra-3-cci-001048-high-severity-events-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ra-3-cci-001050-004618-new-security-signals-trend
+{
+  "description": "Detects an unusual volume or type of new security signals, which can indicate newly identified threats or risks. Relevant to CCI-001050 and CCI-004618.",
+  "analysis_config": {
+    "bucket_span": "30m",
+    "detectors": [
+      {
+        "detector_description": "Unusual number of new security signals by rule name per host",
+        "function": "high_count",
+        "by_field_name": "signal.rule.name",
+        "over_field_name": "host.name"
+      }
+    ],
+    "influencers": ["user.name", "source.ip", "destination.ip"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ra-3-cci-001050-004618-new-security-signals-trend/_open
+
+PUT _ml/datafeeds/datafeed-ra-3-cci-001050-004618-new-security-signals-trend
+{
+  "job_id": "ra-3-cci-001050-004618-new-security-signals-trend",
+  "indices": [".siem-signals*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "signal.status: open"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ra-3-cci-001050-004618-new-security-signals-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ra-3-cci-001052-significant-system-changes-trend
+{
+  "description": "Detects anomalous rates of significant system changes, such as critical file modifications, package installations, or IAM changes. Relevant to CCI-001052.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "Anomalous rate of system changes by action per host",
+        "function": "high_count",
+        "by_field_name": "event.action",
+        "over_field_name": "host.name"
+      }
+    ],
+    "influencers": ["user.name", "process.name", "file.path"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ra-3-cci-001052-significant-system-changes-trend/_open
+
+PUT _ml/datafeeds/datafeed-ra-3-cci-001052-significant-system-changes-trend
+{
+  "job_id": "ra-3-cci-001052-significant-system-changes-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:file AND event.type:(change OR creation OR deletion) AND file.path:(*.conf OR *.ini OR *.xml OR *.yml OR *.yaml OR /etc/* OR /boot/* OR \"C:\\\\Windows\\\\System32\\\\config\\\\*\")) OR (event.category:package AND event.type:(installation OR deletion)) OR (event.category:iam AND event.type:(user_creation OR user_deletion OR group_creation OR group_deletion OR policy_update OR role_change)) OR (event.category:service AND event.type:(start OR stop OR modification))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ra-3-cci-001052-significant-system-changes-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ra-3-cci-004619-new-vulnerabilities-trend
+{
+  "description": "Detects an unusual number of new vulnerabilities reported on hosts, which is essential for identifying system vulnerabilities. Relevant to CCI-004619.",
+  "analysis_config": {
+    "bucket_span": "1d",
+    "detectors": [
+      {
+        "detector_description": "Unusually high number of new vulnerabilities by severity per host",
+        "function": "high_count",
+        "by_field_name": "vulnerability.severity",
+        "over_field_name": "host.name"
+      }
+    ],
+    "influencers": ["vulnerability.name", "vulnerability.enumeration"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ra-3-cci-004619-new-vulnerabilities-trend/_open
+
+PUT _ml/datafeeds/datafeed-ra-3-cci-004619-new-vulnerabilities-trend
+{
+  "job_id": "ra-3-cci-004619-new-vulnerabilities-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.kind:vulnerability OR vulnerability.name:*"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ra-3-cci-004619-new-vulnerabilities-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ra-3-cci-004620-pii-access-trend
+{
+  "description": "Detects unusual access patterns to data sources containing Personally Identifiable Information (PII) to help assess likelihood and impact. Relevant to CCI-004620.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Unusually high PII access count per user",
+        "function": "high_count",
+        "over_field_name": "user.name"
+      }
+    ],
+    "influencers": ["source.ip", "file.path", "url.path", "process.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ra-3-cci-004620-pii-access-trend/_open
+
+PUT _ml/datafeeds/datafeed-ra-3-cci-004620-pii-access-trend
+{
+  "job_id": "ra-3-cci-004620-pii-access-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(file.path:(*pii* OR *ssn* OR *customer* OR *personal*) OR url.path:(*/api/users* OR */account* OR */profile*) OR database.table:(*users* OR *clients* OR *patients*)) AND event.category:(file OR web OR database OR iam) AND event.type:(access OR info)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ra-3-cci-004620-pii-access-trend/_start
+
+---
+
+DELETE _ml/datafeeds/datafeed-ra-3-cci-001048-high-severity-events-trend?force=true
+DELETE _ml/anomaly_detectors/ra-3-cci-001048-high-severity-events-trend?force=true
+DELETE _ml/datafeeds/datafeed-ra-3-cci-001050-004618-new-security-signals-trend?force=true
+DELETE _ml/anomaly_detectors/ra-3-cci-001050-004618-new-security-signals-trend?force=true
+DELETE _ml/datafeeds/datafeed-ra-3-cci-001052-significant-system-changes-trend?force=true
+DELETE _ml/anomaly_detectors/ra-3-cci-001052-significant-system-changes-trend?force=true
+DELETE _ml/datafeeds/datafeed-ra-3-cci-004619-new-vulnerabilities-trend?force=true
+DELETE _ml/anomaly_detectors/ra-3-cci-004619-new-vulnerabilities-trend?force=true
+DELETE _ml/datafeeds/datafeed-ra-3-cci-004620-pii-access-trend?force=true
+DELETE _ml/anomaly_detectors/ra-3-cci-004620-pii-access-trend?force=true

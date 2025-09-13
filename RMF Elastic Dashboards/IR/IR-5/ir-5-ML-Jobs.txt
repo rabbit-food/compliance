@@ -1,0 +1,195 @@
+PUT _ml/anomaly_detectors/ir-5-cci-000832-signals-trend
+{
+  "description": "Detects an unusual increase in the overall volume of security signals, which could indicate a widespread issue or attack, relevant to CCI-000832.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "high_count",
+        "detector_description": "High count of all security signals"
+      }
+    ],
+    "influencers": ["signal.rule.name", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/ir-5-cci-000832-signals-trend/_open
+
+PUT _ml/datafeeds/datafeed-ir-5-cci-000832-signals-trend
+{
+  "job_id": "ir-5-cci-000832-signals-trend",
+  "indices": [".siem-signals*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.kind:signal"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ir-5-cci-000832-signals-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ir-5-cci-000832-severity-trend
+{
+  "description": "Detects a spike in 'critical' or 'high' severity incidents, helping to prioritize the most significant threats, relevant to CCI-000832.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Count of high/critical severity signals",
+        "partition_field_name": "signal.rule.severity"
+      }
+    ],
+    "influencers": ["host.name", "user.name", "signal.rule.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/ir-5-cci-000832-severity-trend/_open
+
+PUT _ml/datafeeds/datafeed-ir-5-cci-000832-severity-trend
+{
+  "job_id": "ir-5-cci-000832-severity-trend",
+  "indices": [".siem-signals*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.kind:signal AND signal.rule.severity:(high OR critical)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ir-5-cci-000832-severity-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ir-5-cci-000832-triage-backlog-trend
+{
+  "description": "Detects an abnormal increase in the number of open or undocumented signals, which may indicate a triage backlog, relevant to CCI-000832.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "30m",
+    "detectors": [
+      {
+        "function": "high_count",
+        "detector_description": "High count of open or undocumented signals"
+      }
+    ],
+    "influencers": ["signal.rule.name", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/ir-5-cci-000832-triage-backlog-trend/_open
+
+PUT _ml/datafeeds/datafeed-ir-5-cci-000832-triage-backlog-trend
+{
+  "job_id": "ir-5-cci-000832-triage-backlog-trend",
+  "indices": [".siem-signals*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.kind:signal AND (signal.status:open OR NOT cases.status:*)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ir-5-cci-000832-triage-backlog-trend/_start
+
+---
+
+PUT _ml/anomaly_detectors/ir-5-cci-000832-noisy-host-trend
+{
+  "description": "Detects when a specific host begins generating an unusually high number of security signals, relevant to CCI-000832.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "high_count",
+        "detector_description": "High count of signals from a single host",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": ["signal.rule.name", "user.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+
+POST _ml/anomaly_detectors/ir-5-cci-000832-noisy-host-trend/_open
+
+PUT _ml/datafeeds/datafeed-ir-5-cci-000832-noisy-host-trend
+{
+  "job_id": "ir-5-cci-000832-noisy-host-trend",
+  "indices": [".siem-signals*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "host.name"
+          }
+        },
+        {
+          "query_string": {
+            "query": "event.kind:signal"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ir-5-cci-000832-noisy-host-trend/_start
+
+---
+
+DELETE _ml/datafeeds/datafeed-ir-5-cci-000832-signals-trend?force=true
+DELETE _ml/anomaly_detectors/ir-5-cci-000832-signals-trend?force=true
+DELETE _ml/datafeeds/datafeed-ir-5-cci-000832-severity-trend?force=true
+DELETE _ml/anomaly_detectors/ir-5-cci-000832-severity-trend?force=true
+DELETE _ml/datafeeds/datafeed-ir-5-cci-000832-triage-backlog-trend?force=true
+DELETE _ml/anomaly_detectors/ir-5-cci-000832-triage-backlog-trend?force=true
+DELETE _ml/datafeeds/datafeed-ir-5-cci-000832-noisy-host-trend?force=true
+DELETE _ml/anomaly_detectors/ir-5-cci-000832-noisy-host-trend?force=true

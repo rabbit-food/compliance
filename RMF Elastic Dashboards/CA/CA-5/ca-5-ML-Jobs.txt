@@ -1,0 +1,40 @@
+PUT _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend
+{
+  "description": "Detects anomalous trends in security findings (vulnerabilities, threats, compliance, audit failures) that necessitate Plan of Action and Milestones (POA&M) updates, relevant to CCI-000265.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Overall count of security findings for POA&M updates"
+      },
+      {
+        "function": "high_count",
+        "by_field_name": "host.name",
+        "detector_description": "Unusually high number of security findings from a single host"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "user.name",
+      "event.category",
+      "rule.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+
+POST _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend/_open
+
+
+---
+
+DELETE _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend?force=true

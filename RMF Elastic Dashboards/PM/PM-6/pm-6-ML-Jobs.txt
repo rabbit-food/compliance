@@ -1,0 +1,195 @@
+PUT _ml/anomaly_detectors/pm-6-cci-000210-000211-security-events-trend-job
+{
+  "description": "Detects an anomalous increase in key security events, including alerts, high-severity events, and vulnerability detections, relevant to CCI-000210 and CCI-000211.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "High count of security events by event.outcome",
+        "function": "high_count",
+        "partition_field_name": "event.outcome"
+      }
+    ],
+    "influencers": ["host.name", "user.name", "rule.name", "process.name", "cloud.instance.id"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/pm-6-cci-000210-000211-security-events-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-6-cci-000210-000211-security-events-trend-job
+{
+  "job_id": "pm-6-cci-000210-000211-security-events-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "((event.kind:(alert OR signal) OR threat.indicator.*:* OR event.category:(vulnerability OR malware OR intrusion_detection OR authentication OR iam OR configuration) OR rule.threat.tactic.id:* OR event.severity:(high OR critical) OR process.name:(nessus* OR qualys* OR nmap* OR metasploit* OR mimikatz* OR osquery*) OR (event.provider:(\"cloud.aws\" OR \"cloud.gcp\" OR \"cloud.azure\") AND event.module:(\"guardduty\" OR \"securityhub\" OR \"inspector\" OR \"google.cloud.audit\" OR \"securitycenter\" OR \"AzureSecurityCenter\" OR \"Sentinel\"))))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-6-cci-000210-000211-security-events-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/pm-6-cci-000211-reportable-incidents-trend-job
+{
+  "description": "Detects an anomalous increase in the volume of reportable security incidents, such as failed events and high-impact successful changes, relevant to CCI-000211.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "High count of reportable incidents",
+        "function": "high_count"
+      }
+    ],
+    "influencers": ["host.name", "user.name", "event.action", "process.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/pm-6-cci-000211-reportable-incidents-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-6-cci-000211-reportable-incidents-trend-job
+{
+  "job_id": "pm-6-cci-000211-reportable-incidents-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.outcome:failure OR (event.dataset:*.anomaly AND anomaly_score >= 75) OR ((event.action:(\"user_password_changed\" OR \"file_deleted\" OR \"registry_key_deleted\" OR \"privilege-escalation\" OR \"critical-process-terminated\") OR event.type:(\"deletion\" OR \"creation\") OR (event.category:\"authentication\" AND event.type:\"user\")) AND event.outcome:success AND NOT (user.name:(\"system\" OR \"administrator\" OR \"NT AUTHORITY\\\\SYSTEM\" OR \"LocalSystem\" OR \"NetworkService\" OR \"*$\" OR \"org_authorized_user\") OR user.group.name:(\"Domain Admins\" OR \"org_admin_group\")))"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-6-cci-000211-reportable-incidents-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/pm-6-cci-004337-privacy-incidents-trend-job
+{
+  "description": "Detects an anomalous increase in privacy-related incidents, including DLP alerts and access to sensitive data paths, relevant to CCI-004337.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "High count of privacy incidents",
+        "function": "high_count"
+      }
+    ],
+    "influencers": ["host.name", "user.name", "file.path", "rule.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/pm-6-cci-004337-privacy-incidents-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-6-cci-004337-privacy-incidents-trend-job
+{
+  "job_id": "pm-6-cci-004337-privacy-incidents-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:(file OR database OR network) AND (file.path:(*pii* OR *phi* OR *ssn* OR *financial*) OR rule.name:*privacy* OR event.code:*privacy_violation*)) OR (data_stream.dataset:*dlp*)"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-6-cci-004337-privacy-incidents-trend-job/_start
+
+---
+
+PUT _ml/anomaly_detectors/pm-6-cci-004336-sensitive-data-access-trend-job
+{
+  "description": "Detects anomalous access patterns to sensitive data, identifying users who access data more frequently than usual or who rarely access such data, relevant to CCI-004336.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+       {
+        "detector_description": "High count of sensitive data access events partitioned by user name",
+        "function": "high_count",
+        "partition_field_name": "user.name"
+      },
+      {
+        "detector_description": "Rare user accessing sensitive data",
+        "function": "rare",
+        "by_field_name": "user.name"
+      }
+    ],
+    "influencers": ["host.name", "file.path", "process.name", "event.outcome"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/pm-6-cci-004336-sensitive-data-access-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-6-cci-004336-sensitive-data-access-trend-job
+{
+  "job_id": "pm-6-cci-004336-sensitive-data-access-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(tags: \"PII\" OR data.classification: confidential OR file.path: (*sensitive* OR *confidential* OR *pii*)) AND event.category: file AND event.type: access"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-6-cci-004336-sensitive-data-access-trend-job/_start
+
+---
+
+DELETE _ml/datafeeds/datafeed-pm-6-cci-000210-000211-security-events-trend-job?force=true
+DELETE _ml/anomaly_detectors/pm-6-cci-000210-000211-security-events-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-pm-6-cci-000211-reportable-incidents-trend-job?force=true
+DELETE _ml/anomaly_detectors/pm-6-cci-000211-reportable-incidents-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-pm-6-cci-004337-privacy-incidents-trend-job?force=true
+DELETE _ml/anomaly_detectors/pm-6-cci-004337-privacy-incidents-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-pm-6-cci-004336-sensitive-data-access-trend-job?force=true
+DELETE _ml/anomaly_detectors/pm-6-cci-004336-sensitive-data-access-trend-job?force=true

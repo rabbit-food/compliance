@@ -1,0 +1,163 @@
+PUT _ml/anomaly_detectors/au-4-cci-001848-user-activity-trend
+{
+  "description": "Detects anomalies in the trend of auditable user activities, supporting CCI-001848.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "User activity count"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "host.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+POST _ml/anomaly_detectors/au-4-cci-001848-user-activity-trend/_open
+PUT _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend
+{
+  "job_id": "au-4-cci-001848-user-activity-trend",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:(user OR authentication OR process) OR event.type:(start OR info OR change OR end) OR event.action:(\"user_added\" OR \"user_removed\" OR \"user_modified\" OR \"logon\" OR \"logoff\" OR \"failed_logon\" OR \"process_started\" OR \"process_created\" OR \"process_terminated\" OR \"file_access\" OR \"file_creation\" OR \"file_modification\" OR \"file_deletion\" OR \"service_creation\" OR \"service_start\" OR \"service_stop\" OR \"registry_key_creation\" OR \"registry_value_set\" OR \"scheduled_task_created\" OR \"policy_change\" OR \"group_membership_change\" OR \"authentication_success\" OR \"authentication_failure\" OR \"authorization_failure\" OR \"access_denied\" OR \"privilege_use\" OR \"run_as_user\" OR \"su\" OR \"sudo\" OR \"new_process\" OR \"command_execution\" OR \"execve\" OR \"service_install\" OR \"account_management\" OR \"security_policy_change\" OR \"audit_policy_change\" OR \"object_access\" OR \"handle_granted\" OR \"handle_closed\" OR \"network_connection\" OR \"dns_query\")) AND NOT user.name:(root OR system OR administrator OR \"NT AUTHORITY\\\\SYSTEM\" OR LocalSystem OR NetworkService OR gdm OR ntp OR rpcuser OR dnsmasq OR avahi OR sshd OR polkitd OR nobody OR _mbsetupuser OR daemon OR sssd OR _softwareupdate OR _lpadmin OR _hiddend OR \"Authenticated Users\" OR \"ANONYMOUS LOGON\" OR \"NT AUTHORITY\\\\ANONYMOUS LOGON\" OR \"LOCAL SERVICE\" OR \"NETWORK SERVICE\" OR \"DWM-1\" OR \"UMFD-1\") AND NOT (process.name:(\"auditd\" OR \"winlogbeat\" OR \"filebeat\" OR \"sysmon64.exe\" OR \"msmpeng.exe\" OR \"smss.exe\" OR \"csrss.exe\" OR \"wininit.exe\" OR \"services.exe\" OR \"lsass.exe\" OR \"lsm.exe\" OR \"winlogon.exe\" OR \"explorer.exe\" OR \"svchost.exe\") AND event.outcome:success)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "host.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend/_start
+PUT _ml/anomaly_detectors/au-4-audit-log-backup-trend
+{
+  "description": "Detects anomalies in the frequency of audit log backup events, supporting AU-4.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Audit log backup events"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "event.outcome"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+POST _ml/anomaly_detectors/au-4-audit-log-backup-trend/_open
+PUT _ml/datafeeds/datafeed-au-4-audit-log-backup-trend
+{
+  "job_id": "au-4-audit-log-backup-trend",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:backup OR event.action:(backup OR archive OR transfer)) AND (file.path:*audit* OR file.name:*audit.log* OR process.name:(rsync OR scp OR robocopy OR aws_cli OR gcloud))"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "event.outcome": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-4-audit-log-backup-trend/_start
+PUT _ml/anomaly_detectors/au-4-cci-001849-audited-events-trend
+{
+  "description": "Detects anomalies in the volume and types of all audited events, supporting CCI-001849.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "by_field_name": "event.category",
+        "detector_description": "Audited events trend by type"
+      }
+    ],
+    "influencers": [
+      "event.category",
+      "host.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+POST _ml/anomaly_detectors/au-4-cci-001849-audited-events-trend/_open
+PUT _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend
+{
+  "job_id": "au-4-cci-001849-audited-events-trend",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.module:(auditd OR winlogbeat OR filebeat OR sysmon) OR event.dataset:(linux.auditd OR windows.eventlog OR cloudtrail OR gcp.audit))"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "event.category": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend/_start
+DELETE _ml/anomaly_detectors/au-4-cci-001848-user-activity-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend?force=true
+DELETE _ml/anomaly_detectors/au-4-audit-log-backup-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-4-audit-log-backup-trend?force=true
+DELETE _ml/anomaly_detectors/au-4-cci-001849-audited-events-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend?force=true

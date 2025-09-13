@@ -1,0 +1,166 @@
+PUT _ml/anomaly_detectors/pm-5-cci-004328-004329-new-hosts-trend-job
+{
+  "description": "Detects an anomalous increase in the number of unique hosts reporting to the network, which could indicate unauthorized assets. This supports inventory development and validation as required by CCI-004328 and CCI-004329.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "High distinct count of host.name",
+        "function": "high_distinct_count",
+        "field_name": "host.name"
+      }
+    ],
+    "influencers": [
+      "host.os.family",
+      "cloud.provider",
+      "host.geo.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+
+POST _ml/anomaly_detectors/pm-5-cci-004328-004329-new-hosts-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-5-cci-004328-004329-new-hosts-trend-job
+{
+  "job_id": "pm-5-cci-004328-004329-new-hosts-trend-job",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "host.name"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-5-cci-004328-004329-new-hosts-trend-job/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/pm-5-cci-004328-rare-os-detection-job
+{
+  "description": "Detects the appearance of new or rare operating systems, which could indicate a policy violation, a misconfigured system, or a threat. This supports system inventory development as required by CCI-004328.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "Rare host.os.full",
+        "function": "rare",
+        "by_field_name": "host.os.full"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "cloud.provider"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+
+POST _ml/anomaly_detectors/pm-5-cci-004328-rare-os-detection-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-5-cci-004328-rare-os-detection-job
+{
+  "job_id": "pm-5-cci-004328-rare-os-detection-job",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "host.os.full"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-5-cci-004328-rare-os-detection-job/_start?start=now
+
+---
+
+PUT _ml/anomaly_detectors/pm-5-cci-004328-004329-hosts-stopped-reporting-job
+{
+  "description": "Detects when hosts that normally send log data stop reporting, identifying unmonitored assets due to system failure or agent issues. This supports inventory validation as required by CCI-004328 and CCI-004329.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "Low count of events over host.name",
+        "function": "low_count",
+        "over_field_name": "host.name"
+      }
+    ],
+    "influencers": [
+      "host.os.full",
+      "cloud.provider"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf"
+  ]
+}
+
+POST _ml/anomaly_detectors/pm-5-cci-004328-004329-hosts-stopped-reporting-job/_open
+
+PUT _ml/datafeeds/datafeed-pm-5-cci-004328-004329-hosts-stopped-reporting-job
+{
+  "job_id": "pm-5-cci-004328-004329-hosts-stopped-reporting-job",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "host.name"
+          }
+        }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-pm-5-cci-004328-004329-hosts-stopped-reporting-job/_start?start=now
+
+---
+
+DELETE _ml/datafeeds/datafeed-pm-5-cci-004328-004329-new-hosts-trend-job?force=true
+DELETE _ml/anomaly_detectors/pm-5-cci-004328-004329-new-hosts-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-pm-5-cci-004328-rare-os-detection-job?force=true
+DELETE _ml/anomaly_detectors/pm-5-cci-004328-rare-os-detection-job?force=true
+DELETE _ml/datafeeds/datafeed-pm-5-cci-004328-004329-hosts-stopped-reporting-job?force=true
+DELETE _ml/anomaly_detectors/pm-5-cci-004328-004329-hosts-stopped-reporting-job?force=true

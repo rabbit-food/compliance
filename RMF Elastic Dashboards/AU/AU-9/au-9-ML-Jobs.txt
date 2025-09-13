@@ -1,0 +1,256 @@
+PUT _ml/anomaly_detectors/au-9-cci-000162-000163-000164-access-attempts-trend
+{
+  "description": "Detects anomalies in all access attempts (successful and failed) on audit information or tools, relevant to CCI-000162, CCI-000163, and CCI-000164.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Total access attempts on audit information/tools"
+      }
+    ],
+    "influencers": ["user.name", "host.name", "file.path", "process.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+POST _ml/anomaly_detectors/au-9-cci-000162-000163-000164-access-attempts-trend/_open
+PUT _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-access-attempts-trend
+{
+  "job_id": "au-9-cci-000162-000163-000164-access-attempts-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(file.path:\"/var/log/audit/*\" OR file.path:\"C:\\\\Windows\\\\System32\\\\winevt\\\\Logs\\\\*\" OR file.extension:(log OR evtx OR json OR xml OR conf OR cfg OR ini) OR process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.module:(auditbeat OR winlogbeat OR filebeat OR sysmon OR osquery OR zeek OR suricata) OR cloud.service.name:(CloudTrail OR Azure Activity Logs OR GCP Audit Logs OR Kubernetes)) AND (event.category:(file OR process OR registry OR network OR iam) OR event.type:(access OR modification OR deletion OR creation OR configuration OR execution OR authentication OR authorization OR policy OR service_control)) AND NOT (user.name:(system OR administrator OR \\\"NT AUTHORITY\\\\SYSTEM\\\" OR LocalSystem OR NetworkService) AND event.outcome:success)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "event.outcome": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-access-attempts-trend/_start
+
+PUT _ml/anomaly_detectors/au-9-cci-000162-000163-000164-failed-access-trend
+{
+  "description": "Detects anomalies in failed access attempts on audit information or tools, relevant to CCI-000162, CCI-000163, and CCI-000164.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Failed access attempts on audit information/tools"
+      }
+    ],
+    "influencers": ["user.name", "host.name", "file.path", "process.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+POST _ml/anomaly_detectors/au-9-cci-000162-000163-000164-failed-access-trend/_open
+PUT _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-failed-access-trend
+{
+  "job_id": "au-9-cci-000162-000163-000164-failed-access-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(file.path:\"/var/log/audit/*\" OR file.path:\"C:\\\\Windows\\\\System32\\\\winevt\\\\Logs\\\\*\" OR file.extension:(log OR evtx OR json OR xml OR conf OR cfg OR ini) OR process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.module:(auditbeat OR winlogbeat OR filebeat OR sysmon OR osquery OR zeek OR suricata) OR cloud.service.name:(CloudTrail OR Azure Activity Logs OR GCP Audit Logs OR Kubernetes)) AND (event.category:(file OR process OR registry OR network OR iam) OR event.type:(access OR modification OR deletion OR creation OR configuration OR execution OR authentication OR authorization OR policy OR service_control)) AND event.outcome:failure"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "event.outcome": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-failed-access-trend/_start
+
+PUT _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend
+{
+  "description": "Detects anomalies in unauthorized use of audit management tools, relevant to CCI-001493.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Unauthorized audit tool usage"
+      }
+    ],
+    "influencers": ["user.name", "process.name", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+POST _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend/_open
+PUT _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend
+{
+  "job_id": "au-9-cci-001493-unauth-tool-usage-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.type:(configuration OR execution)) AND NOT (user.name:(system OR administrator OR \\\"NT AUTHORITY\\\\SYSTEM\\\" OR LocalSystem OR NetworkService) AND event.outcome:success)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "process.name": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend/_start
+
+PUT _ml/anomaly_detectors/au-9-cci-001494-001495-audit-mod-del-trend
+{
+  "description": "Detects anomalies in unauthorized modification or deletion of audit tools or audit information, relevant to CCI-001494 and CCI-001495.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Unauthorized audit modification/deletion"
+      }
+    ],
+    "influencers": ["user.name", "file.path", "process.name", "event.action"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+POST _ml/anomaly_detectors/au-9-cci-001494-001495-audit-mod-del-trend/_open
+PUT _ml/datafeeds/datafeed-au-9-cci-001494-001495-audit-mod-del-trend
+{
+  "job_id": "au-9-cci-001494-001495-audit-mod-del-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(file.path:\"/var/log/audit/*\" OR file.path:\"C:\\\\Windows\\\\System32\\\\winevt\\\\Logs\\\\*\" OR file.extension:(log OR evtx OR json OR xml OR conf OR cfg OR ini) OR process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.module:(auditbeat OR winlogbeat OR filebeat OR sysmon OR osquery OR zeek OR suricata) OR cloud.service.name:(CloudTrail OR Azure Activity Logs OR GCP Audit Logs OR Kubernetes)) AND event.type:(modification OR deletion) AND NOT (user.name:(system OR administrator OR \\\"NT AUTHORITY\\\\SYSTEM\\\" OR LocalSystem OR NetworkService) AND event.outcome:success)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "event.action": {
+      "type": "keyword"
+    },
+    "file.path": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-9-cci-001494-001495-audit-mod-del-trend/_start
+
+PUT _ml/anomaly_detectors/au-9-cci-003831-003842-unauth-activity-trend
+{
+  "description": "Detects anomalies in unauthorized audit information activity (access, modification, deletion) and potential alerting failures, relevant to CCI-003831 and CCI-003842.",
+  "groups": ["rmf"],
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "count",
+        "detector_description": "Unauthorized audit activity"
+      }
+    ],
+    "influencers": ["user.name", "event.action", "event.outcome", "host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  }
+}
+POST _ml/anomaly_detectors/au-9-cci-003831-003842-unauth-activity-trend/_open
+PUT _ml/datafeeds/datafeed-au-9-cci-003831-003842-unauth-activity-trend
+{
+  "job_id": "au-9-cci-003831-003842-unauth-activity-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(file.path:\"/var/log/audit/*\" OR file.path:\"C:\\\\Windows\\\\System32\\\\winevt\\\\Logs\\\\*\" OR file.extension:(log OR evtx OR json OR xml OR conf OR cfg OR ini) OR process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.module:(auditbeat OR winlogbeat OR filebeat OR sysmon OR osquery OR zeek OR suricata) OR cloud.service.name:(CloudTrail OR Azure Activity Logs OR GCP Audit Logs OR Kubernetes)) AND (event.category:(file OR process OR registry OR network OR iam) OR event.type:(access OR modification OR deletion OR creation OR configuration OR execution OR authentication OR authorization OR policy OR service_control)) AND NOT (user.name:(system OR administrator OR \\\"NT AUTHORITY\\\\SYSTEM\\\" OR LocalSystem OR NetworkService) AND event.outcome:success)"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "event.action": {
+      "type": "keyword"
+    },
+    "event.outcome": {
+      "type": "keyword"
+    }
+  }
+}
+POST _ml/datafeeds/datafeed-au-9-cci-003831-003842-unauth-activity-trend/_start
+
+DELETE _ml/anomaly_detectors/au-9-cci-000162-000163-000164-access-attempts-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-access-attempts-trend?force=true
+DELETE _ml/anomaly_detectors/au-9-cci-000162-000163-000164-failed-access-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-failed-access-trend?force=true
+DELETE _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend?force=true
+DELETE _ml/anomaly_detectors/au-9-cci-001494-001495-audit-mod-del-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-9-cci-001494-001495-audit-mod-del-trend?force=true
+DELETE _ml/anomaly_detectors/au-9-cci-003831-003842-unauth-activity-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-9-cci-003831-003842-unauth-activity-trend?force=true
