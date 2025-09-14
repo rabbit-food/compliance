@@ -1,19 +1,50 @@
-# RMF Visualizations, ML Jobs, and Dashboards for Kibana and Elastic
+# RMF,CMMC, C-SCRM, NIST Visualizations, ML Jobs, and Dashboards for Kibana and Elastic
 
-This project provides a set of Kibana visualizations, machine learning jobs, and dashboards specifically designed for **Risk Management Framework (RMF) analysts**. The goal of these tools is to enable real-time monitoring of RMF policy compliance at the component level within an Elastic and Kibana environment.
+This project provides a set of Kibana visualizations, machine learning jobs, and dashboards specifically designed for NIST led IT compliance frameworks. Most of these fraemworks utilize the same Controls. The goal of these tools is to enable real-time monitoring of RMF policy compliance at the component level within an Elastic and Kibana environment.
+**Risk Management Framework (RMF)** **NIST 800-53r5**
+**Cybersecurity Maturity Model Certification (CMMC)** **NIST 800-171r3**
+**Cybersecurity Supply Chain Risk Management (C-SCRM)** **NIST 800-161r1**
+
+
+
+
 
 
 ## Disclaimer
+
 **There is currently no official support for these visualizations, ML jobs, and dashboards. Use them at your own risk.**
 We highly appreciate any bug reports and pull requests for fixes. Your contributions are valuable to the community and will help improve these tools for everyone.
+While these dashboards and visualizations are powerful for ongoing assessment, they are not intended to replace the full RMF process.
 
-## RMF Compliance Monitoring
-These tools are primarily designed to assist with the **continuous monitoring** aspects of the RMF. They provide real-time insights into your security posture and help you determine if specific **Control Correlation Identifiers (CCIs)** are being met for each individual component you need to monitor.
+##
+
+### For RMF Compliance Monitoring : How to use these 
+
+Use as-is. 
+
+At this time these visualizations are categorized under the format of the RMF. This repo's tools are primarily designed to assist with Federal compliance **continuous monitoring** and the federal compliance frameworks are all built off of one another. They provide real-time insights into your security posture and help you determine if specific **Control Correlation Identifiers (CCIs)** are being met for each individual component you need to monitor.
 
 While these dashboards and visualizations are powerful for ongoing assessment, they are not intended to replace the full RMF process.
 
 
+
+### For CMMC Compliance Monitoring : How to use these 
+
+Use this: [Protoype CUI Overlay](https://csrc.nist.gov/files/pubs/sp/800/171/r3/fpd/docs/sp800-171r3-fpd-cui-overlay.xlsx)
+
+This repo's tools are primarily designed to assist with Federal compliance **continuous monitoring** and the federal compliance frameworks are all built off of one another. At this time the repo's visualizations are categorized under the format of the RMF but they are VERY similar (basically exact) requirements for CMMC.  The government provided this link to show which RMF ID's match the CMMC ID's. You can use this to connect the RMF format of this repo.
+
+
+
+### For C-SCRM Compliance Monitoring : How to use these 
+
+Use this: [Protoype CUI Overlay](https://csrc.nist.gov/files/pubs/sp/800/171/r3/fpd/docs/sp800-171r3-fpd-cui-overlay.xlsx)
+
+This repo's tools are primarily designed to assist with Federal compliance **continuous monitoring** and the federal compliance frameworks are all built off of one another. At this time the repo's visualizations are categorized under the format of the RMF but they are VERY similar (basically exact) requirements for C-SCRM.  Any C-SCRM function similar to CMMC uses a nearly identically ID and definition to the equivalent CMMC ID. In future versions I might show this via a spreadsheet. Anyway, the federal priority for C-SCRM is new, they have not put in the time to build a method to match their C-SCRM ID's to RMF. So for now use the above CMMC link as it is nearly identical
+
+##
 ## Getting Started
+##
 
 ### Prerequisites
 
