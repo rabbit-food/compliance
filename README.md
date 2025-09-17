@@ -7,7 +7,7 @@ This project provides a set of Kibana visualizations, machine learning jobs, and
 - **Cybersecurity Supply Chain Risk Management (C-SCRM)**
 - **NIST 800-161r1**
 
-Check out our [LinkedIn page](https://www.linkedin.com/company/rabbitfooddod){:target="_blank"} for updates, demo's, and discussion
+Check out our [LinkedIn page](https://www.linkedin.com/company/rabbitfooddod) for updates, demo's, and discussion
 
 ![Main Dashboard](images/%20Main%20Dashboard%20View.png)
 ![Drill Down to CCI View](images/CCI%20View.png)
