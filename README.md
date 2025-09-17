@@ -1,4 +1,4 @@
-# RMF,CMMC, C-SCRM, NIST Visualizations, ML Jobs, and Dashboards for Kibana and Elastic
+# RMF, CMMC, C-SCRM, NIST Visualizations, ML Jobs, and Dashboards for Kibana and Elastic
 
 This project provides a set of Kibana visualizations, machine learning jobs, and dashboards specifically designed for NIST led IT compliance frameworks. Most of these fraemworks utilize the same Controls. The goal of these tools is to enable real-time monitoring of RMF policy compliance at the component level within an Elastic and Kibana environment.
 - **Risk Management Framework (RMF)** **NIST 800-53r5**
