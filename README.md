@@ -6,8 +6,11 @@ This project provides a set of Kibana visualizations, machine learning jobs, and
 **Cybersecurity Supply Chain Risk Management (C-SCRM)** **NIST 800-161r1**
 
 
+Check out our [LinkedIn page](https://www.linkedin.com/company/rabbitfooddod) for updates, demo's, and discussion
 
 
+[Main Dashboard](images/%20Main%20Dashboard%20View.png)
+[Drill Down to CCI View](image/CCI%20View.png)
 
 
 ## Disclaimer
@@ -26,7 +29,7 @@ At this time these visualizations are categorized under the format of the RMF. T
 
 While these dashboards and visualizations are powerful for ongoing assessment, they are not intended to replace the full RMF process.
 
-A description of all dashboads in this github can be found in the file [Content within each Control folder](https://github.com/rabbit-food/compliance/blob/main/Content%20within%20each%20Control%20Folder.md) This will describe what each dashboard, ml job, and visualization will provide for each CCI and Control
+A description of all dashboads in this github can be found in the file [Content within each Control folder](Content%20within%20each%20Control%20Folder.md) This will describe what each dashboard, ml job, and visualization will provide for each CCI and Control
 
 
 
