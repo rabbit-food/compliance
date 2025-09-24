@@ -105,7 +105,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
     "influencers": ["host.name", "event.action", "event.module"]
   },
   "data_description": {
-    "time_field": "@timestamp"
+    "time_field": "event.ingested"
   },
   "model_plot_config": {
     "enabled": true
@@ -113,26 +113,35 @@ PUT _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
   "groups": ["rmf"]
 }
 
-POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_open
-
 PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
 {
   "job_id": "au-3-cci-000130-low-event-action-volume-trend",
   "indices": ["logs-*"],
   "query": {
     "bool": {
+      "must": [
+        { "exists": { "field": "event.action" } }
+      ],
       "filter": [
         {
           "query_string": {
-            "query": "event.module: (auditd or auditbeat or sysmon or system or security or powershell or osquery or \"windows\" or \"linux\" or \"aws\" or \"gcp\" or \"azure\") OR event.dataset: (*.log or *.audit or *.security or *.system or *.application or \"cloudtrail\" or \"guardduty\") OR event.category: (authentication or configuration or database or driver or file or host or iam or intrusion_detection or malware or network or package or process or registry or session or threat or web) OR event.type: (access or change or connection or creation or deletion or end or error or group or info or installation or modification or process_started or protocol or start or user)"
+            "query": "event.module:(auditd OR auditbeat OR sysmon OR system OR security OR powershell OR osquery OR windows OR linux OR aws OR gcp OR azure) OR event.dataset:(*.log OR *.audit OR *.security OR *.system OR *.application OR cloudtrail OR guardduty) OR event.category:(authentication OR configuration OR database OR driver OR file OR host OR iam OR intrusion_detection OR malware OR network OR package OR process OR registry OR session OR threat OR web) OR event.type:(access OR change OR connection OR creation OR deletion OR end OR error OR group OR info OR installation OR modification OR process_started OR protocol OR start OR user)"
           }
         }
       ]
     }
+  },
+  "delayed_data_check_config": {
+    "enabled": true,
+    "check_window": "1h"
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start?start=now
+POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_open
+
+POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start?start=0
+
+
 
 ---
 
@@ -279,4 +288,5 @@ DELETE _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend?force=tru
 DELETE _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend?force=true
 DELETE _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend?force=true
 DELETE _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend?force=true
-DELETE _ml/datafeeds/datafeed-au-3-cci-000130-
+POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_close
+DELETE _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
