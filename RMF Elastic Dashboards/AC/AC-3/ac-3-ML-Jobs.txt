@@ -39,7 +39,7 @@ PUT _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend
       "filter": [
         {
           "query_string": {
-            "query": "(event.action: (\"session_start\" OR \"user_login\" OR \"user_authentication\" OR \"sudo_start\") OR event.category: (authentication OR session) OR winlog.event_id: (4624 OR 4625 OR 4648 OR 4672)) AND NOT user.name: (*system* OR *administrator* OR \"NT AUTHORITY\\SYSTEM\" OR \"-\" OR *service_account* OR *authorized_user*)"
+            "query": "(event.action: (\"session_start\" OR \"user_login\" OR \"user_authentication\" OR \"sudo_start\") OR event.category: (authentication OR session) OR winlog.event_id: (4624 OR 4625 OR 4648 OR 4672)) AND NOT user.name: (root OR *system* OR *administrator* OR \"NT AUTHORITY\\SYSTEM\" OR \"-\" OR *service_account* OR *authorized_user*)"
           }
         }
       ]
