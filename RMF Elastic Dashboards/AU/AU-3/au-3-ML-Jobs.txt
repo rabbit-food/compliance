@@ -23,7 +23,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend
 
 POST _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend/_open
 
-PUT _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend
+PUT _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend
 {
   "job_id": "au-3-cci-000132-non-utc-timestamps-trend",
   "indices": ["logs-*"],
@@ -40,7 +40,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000132-non-utc-timestamps-trend/_start?start=now
+POST _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend/_start?start=now
 
 ---
 
@@ -290,3 +290,5 @@ DELETE _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend?force=
 DELETE _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend?force=true
 POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_close
 DELETE _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
+POST _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend/_close
+DELETE _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend
