@@ -29,18 +29,20 @@ PUT _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend
   "indices": ["logs-*"],
   "query": {
     "bool": {
-      "filter": [
-        {
-          "query_string": {
-            "query": "event.timezone : * and not event.timezone : (\"+00:00\" or \"Z\" or \"UTC\")"
-          }
-        }
+      "must": [
+        { "exists": { "field": "event.timezone" } }
+      ],
+      "must_not": [
+        { "terms": { "event.timezone": ["+00:00", "Z", "UTC", "00.00"] } }
       ]
     }
+  },
+  "delayed_data_check_config": {
+    "enabled": true,
+    "check_window": "1h"
   }
 }
 
-POST _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend/_start?start=now
 
 ---
 
