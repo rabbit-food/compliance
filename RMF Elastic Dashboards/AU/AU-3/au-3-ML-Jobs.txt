@@ -113,6 +113,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
   "groups": ["rmf"]
 }
 
+
 PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
 {
   "job_id": "au-3-cci-000130-low-event-action-volume-trend",
@@ -120,7 +121,14 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
   "query": {
     "bool": {
       "must": [
-        { "exists": { "field": "event.action" } }
+        { "exists": { "field": "event.action" } },
+        { "exists": { "field": "host.name" } }
+      ],
+      "must_not": [
+        { "term": { "event.action": "" } },
+        { "term": { "event.action": "missing" } },
+        { "term": { "host.name": "" } },
+        { "term": { "host.name": "missing" } }
       ],
       "filter": [
         {
@@ -136,6 +144,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
     "check_window": "1h"
   }
 }
+
 
 POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_open
 
