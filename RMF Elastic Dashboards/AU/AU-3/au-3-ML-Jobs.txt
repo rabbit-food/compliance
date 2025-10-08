@@ -156,19 +156,20 @@ POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start
 
 ---
 
-PUT _ml/anomaly_detectors/au-3-cci-000131-low-log-volume-trend
+PUT _ml/anomaly_detectors/au-3-cci-000131-incomplete-records-trend
 {
-  "description": "Detects an anomalous drop in overall audit log volume, which could indicate incomplete records, relevant to CCI-000131.",
+  "description": "Detects anomalous increases in incomplete audit records per host to ensure audit logs include required fields for CCI-000131.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
       {
-        "detector_description": "Low count of total logs by host",
-        "function": "low_count",
+        "detector_description": "High percentage of incomplete audit records per host",
+        "function": "high_mean",
+        "field_name": "missing_field_ratio",
         "partition_field_name": "host.name"
       }
     ],
-    "influencers": ["host.name", "event.module"]
+    "influencers": ["host.name", "event.module", "event.dataset"]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -176,29 +177,73 @@ PUT _ml/anomaly_detectors/au-3-cci-000131-low-log-volume-trend
   "model_plot_config": {
     "enabled": true
   },
-  "groups": ["rmf"]
+  "groups": ["rmf", "cci-000131", "audit-completeness"]
 }
 
-POST _ml/anomaly_detectors/au-3-cci-000131-low-log-volume-trend/_open
 
-PUT _ml/datafeeds/datafeed-au-3-cci-000131-low-log-volume-trend
+
+
+POST _ml/anomaly_detectors/au-3-cci-000131-incomplete-records-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend
 {
-  "job_id": "au-3-cci-000131-low-log-volume-trend",
+  "job_id": "au-3-cci-000131-incomplete-records-trend",
   "indices": ["logs-*"],
   "query": {
     "bool": {
       "filter": [
         {
           "query_string": {
-            "query": "(event.module:(auditbeat OR winlogbeat OR filebeat OR o365audit OR gcp.audit OR osquery OR suricata OR zeek) OR cloud.service.name:(\"CloudTrail\" OR \"Azure Activity Logs\" OR \"GCP Audit Logs\" OR \"Kubernetes\") OR log.file.path:(\"/var/log/*\" OR \"/var/log/audit/*\" OR \"C:\\\\Windows\\\\System32\\\\winevt\\\\Logs\\\\*\") OR process.name:(auditd OR journald OR rsyslogd OR syslog-ng OR \"Windows Event Log\" OR wevtutil.exe) OR (event.category: * AND event.type: *))"
+            "query": "(event.module:(auditbeat OR winlogbeat OR filebeat OR o365audit OR gcp.audit OR osquery OR suricata OR zeek) OR cloud.service.name:(\"CloudTrail\" OR \"Azure Activity Logs\" OR \"GCP Audit Logs\" OR \"Kubernetes\"))"
           }
         }
       ]
     }
+  },
+  "script_fields": {
+    "missing_field_ratio": {
+      "script": {
+        "lang": "painless",
+        "source": """
+          int total = 0;
+          int missing = 0;
+          total = 6; // required fields
+          if (doc['event.action'].size() == 0) missing++;
+          if (doc['event.category'].size() == 0) missing++;
+          if (doc['@timestamp'].size() == 0) missing++;
+          if (doc['event.outcome'].size() == 0) missing++;
+          
+          boolean hasWhere = (doc['host.name'].size() > 0 || doc['source.ip'].size() > 0 || doc['destination.ip'].size() > 0);
+          if (!hasWhere) missing++;
+
+          boolean hasSource = (doc['user.name'].size() > 0 || doc['process.name'].size() > 0 || doc['source.ip'].size() > 0);
+          if (!hasSource) missing++;
+          
+          return missing / (double) total;
+        """
+      }
+    }
+  },
+  "runtime_mappings": {},
+  "aggregations": {
+    "by_host": {
+      "terms": {"field": "host.name"},
+      "aggs": {
+        "avg_missing_ratio": {"avg": {"field": "missing_field_ratio"}},
+        "buckets": {
+          "date_histogram": {
+            "field": "@timestamp",
+            "fixed_interval": "15m"
+          },
+          "aggs": {"value": {"avg": {"field": "missing_field_ratio"}}}
+        }
+      }
+    }
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000131-low-log-volume-trend/_start?start=now
+
+POST _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend/_start?start=now
 
 ---
 
