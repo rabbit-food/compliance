@@ -205,42 +205,27 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend
       "script": {
         "lang": "painless",
         "source": """
-          int total = 0;
+          int total = 6;
           int missing = 0;
-          total = 6; // required fields
+
           if (doc['event.action'].size() == 0) missing++;
           if (doc['event.category'].size() == 0) missing++;
           if (doc['@timestamp'].size() == 0) missing++;
           if (doc['event.outcome'].size() == 0) missing++;
-          
+
           boolean hasWhere = (doc['host.name'].size() > 0 || doc['source.ip'].size() > 0 || doc['destination.ip'].size() > 0);
           if (!hasWhere) missing++;
 
           boolean hasSource = (doc['user.name'].size() > 0 || doc['process.name'].size() > 0 || doc['source.ip'].size() > 0);
           if (!hasSource) missing++;
-          
+
           return missing / (double) total;
         """
       }
     }
-  },
-  "runtime_mappings": {},
-  "aggregations": {
-    "by_host": {
-      "terms": {"field": "host.name"},
-      "aggs": {
-        "avg_missing_ratio": {"avg": {"field": "missing_field_ratio"}},
-        "buckets": {
-          "date_histogram": {
-            "field": "@timestamp",
-            "fixed_interval": "15m"
-          },
-          "aggs": {"value": {"avg": {"field": "missing_field_ratio"}}}
-        }
-      }
-    }
   }
 }
+
 
 
 POST _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend/_start?start=now
@@ -348,3 +333,6 @@ POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_close
 DELETE _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
 POST _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend/_close
 DELETE _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend
+DELETE _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend?force=true
+DELETE _ml/anomaly_detectors/au-3-cci-000131-incomplete-records-trend?force=true
+
