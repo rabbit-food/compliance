@@ -118,28 +118,6 @@ PUT _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend
     "enabled": true
   }
 }
-
-PUT _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend
-{
-  "description": "Detects anomalies in unauthorized use of audit management tools, relevant to CCI-001493.",
-  "groups": ["rmf"],
-  "analysis_config": {
-    "bucket_span": "15m",
-    "detectors": [
-      {
-        "function": "count",
-        "detector_description": "Unauthorized audit tool usage"
-      }
-    ],
-    "influencers": ["user.name", "process.name", "host.name"]
-  },
-  "data_description": {
-    "time_field": "@timestamp"
-  },
-  "model_plot_config": {
-    "enabled": true
-  }
-}
 POST _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend/_open
 PUT _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend
 {
@@ -150,7 +128,7 @@ PUT _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend
       "filter": [
         {
           "query_string": {
-            "query": "(process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.type:(configuration OR execution)) AND NOT (user.name:(system OR administrator OR \\\"NT AUTHORITY\\\\SYSTEM\\\" OR LocalSystem OR NetworkService) AND event.outcome:success)"
+            "query": "(process.name:(auditd OR wevtutil OR auditpol OR journalctl OR powershell.exe OR cmd.exe OR bash OR wmic OR sc.exe OR reg.exe OR net.exe OR taskkill.exe OR schtasks.exe OR at.exe OR psexec.exe OR mimikatz.exe OR certutil.exe OR bitsadmin.exe) OR event.type:(configuration OR execution)) AND NOT (user.name:(system OR root OR administrator OR \\\"NT AUTHORITY\\\\SYSTEM\\\" OR LocalSystem OR NetworkService) AND event.outcome:success)"
           }
         }
       ]
@@ -166,6 +144,7 @@ PUT _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend
   }
 }
 POST _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend/_start
+
 
 PUT _ml/anomaly_detectors/au-9-cci-001494-001495-audit-mod-del-trend
 {
