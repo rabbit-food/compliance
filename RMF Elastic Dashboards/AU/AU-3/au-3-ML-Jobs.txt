@@ -153,6 +153,113 @@ POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_open
 POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start?start=0
 
 
+---
+
+PUT _ml/anomaly_detectors/au-3-cci-000130-windows-low-event-action-volume-trend
+{
+  "description": "Detects an abnormally low count of required Windows audit events (logon/logoff, file share failures, firewall rule changes, and PowerShell transcription) which may indicate audit policy failure for CCI-000130.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Low count of Windows audit events by action",
+        "function": "low_count",
+        "by_field_name": "event.action"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "event.action",
+      "winlog.event_id",
+      "winlog.channel"
+    ]
+  },
+  "data_description": {
+    "time_field": "event.ingested"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf", "cci-000130", "windows"]
+}
+
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000130-windows-low-event-action-volume-trend
+{
+  "job_id": "au-3-cci-000130-windows-low-event-action-volume-trend",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "must": [
+        { "term": { "host.os.type": "windows" } },
+        { "exists": { "field": "event.action" } },
+        { "exists": { "field": "host.name" } }
+      ],
+      "must_not": [
+        { "term": { "event.action": "" } },
+        { "term": { "event.action": "missing" } },
+        { "term": { "host.name": "" } },
+        { "term": { "host.name": "missing" } }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "should": [
+              /* Other Logon / Logoff Events – Success & Failure */
+              {
+                "bool": {
+                  "must": [
+                    { "term": { "winlog.channel": "Security" } },
+                    { "terms": { "winlog.event_id": [4624, 4625, 4634, 4648, 4672] } }
+                  ]
+                }
+              },
+              /* Detailed File Share – Failures */
+              {
+                "bool": {
+                  "must": [
+                    { "term": { "winlog.channel": "Security" } },
+                    { "term": { "winlog.event_id": 5145 } },
+                    { "term": { "event.outcome": "failure" } }
+                  ]
+                }
+              },
+              /* MPSSVC Rule-Level Policy Changes – Success & Failure */
+              {
+                "bool": {
+                  "must": [
+                    { "term": { "winlog.channel": "Security" } },
+                    { "terms": { "winlog.event_id": [4946, 4947, 4948, 4949, 4950, 4951, 4952] } }
+                  ]
+                }
+              },
+              /* PowerShell Transcription / Script Block Logging */
+              {
+                "bool": {
+                  "must": [
+                    { "term": { "winlog.channel": "Microsoft-Windows-PowerShell/Operational" } },
+                    { "terms": { "winlog.event_id": [4103, 4104] } }
+                  ]
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ]
+    }
+  },
+  "delayed_data_check_config": {
+    "enabled": true,
+    "check_window": "1h"
+  }
+}
+
+
+POST _ml/anomaly_detectors/au-3-cci-000130-windows-low-event-action-volume-trend/_open
+
+POST _ml/datafeeds/datafeed-au-3-cci-000130-windows-low-event-action-volume-trend/_start?start=0
+
 
 ---
 
@@ -335,4 +442,6 @@ POST _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend/_close
 DELETE _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend
 DELETE _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend?force=true
 DELETE _ml/anomaly_detectors/au-3-cci-000131-incomplete-records-trend?force=true
+DELETE _ml/anomaly_detectors/au-3-cci-000130-windows-low-event-action-volume-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-3-cci-000130-windows-low-event-action-volume-trend?force=true
 
