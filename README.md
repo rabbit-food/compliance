@@ -1,6 +1,7 @@
 # RMF, FedRAMP, CMMC, C-SCRM, NIST, Visualizations, ML Jobs, and Dashboards for Kibana and Elastic
 
-This project provides a set of Kibana visualizations, machine learning jobs, and dashboards specifically designed for NIST led IT compliance frameworks. Most of these fraemworks utilize the same Controls. The goal of these tools is to enable real-time monitoring of RMF policy compliance at the component level within an Elastic and Kibana environment.
+This project provides a set of Kibana visualizations, machine learning jobs, and dashboards specifically designed for cyber compliance frameworks. Most of these frameworks utilize the same Controls. The goal of these tools is to enable real-time monitoring of cyber compliance policy at the component level within an Elastic and Kibana environment.
+
 - **Risk Management Framework (RMF)** **NIST 800-53r5**
 - **Cybersecurity Maturity Model Certification (CMMC) v2.0**
 - **NIST 800-171r3**
