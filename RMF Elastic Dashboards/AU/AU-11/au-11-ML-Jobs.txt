@@ -74,6 +74,7 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job
 POST _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job/_open
 POST _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job/_start
 
+---
 
 # AU-11 / CCI-000167: Audit Record Retention Anomaly Detection (Monitoring Count of Records)
 PUT _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job

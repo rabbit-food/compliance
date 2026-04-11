@@ -1,0 +1,103 @@
+PUT _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job
+{
+  "description": "Detects rare or new hostnames appearing in logs, relevant to CCI-003874.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "host.name"
+        "detector_description": "Hostname / Server / Virtual Machine / Instance / Workstation Change Count"
+      }
+    ],
+    "influencers": ["host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job
+{
+  "job_id": "ca-7-cci-003874-unusual-hostname-change-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "must": [
+        { "match_all": {} }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.name": {
+      "type": "keyword"
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+PUT _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job
+{
+  "description": "Detects missing or stopped hostnames appearing in logs, relevant to CCI-003874.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "low_count",
+        "by_field_name": "host.name"
+        "detector_description": "Hostname / Server / Virtual Machine / Instance / Workstation Low or Stopped Logs Count"
+      }
+    ],
+    "influencers": ["host.name"]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job
+{
+  "job_id": "ca-7-cci-003874-hostname-stop-logs-trend-job",
+  "indices": ["logs-*"],
+  "query": {
+    "bool": {
+      "must": [
+        { "match_all": {} }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.name": {
+      "type": "keyword"
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job?force=true
+DELETE _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job?force=true
