@@ -6,7 +6,7 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job
     "detectors": [
       {
         "function": "rare",
-        "by_field_name": "host.name"
+        "by_field_name": "host.name",
         "detector_description": "Hostname / Server / Virtual Machine / Instance / Workstation Change Count"
       }
     ],
@@ -55,7 +55,7 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job
     "detectors": [
       {
         "function": "low_count",
-        "by_field_name": "host.name"
+        "by_field_name": "host.name",
         "detector_description": "Hostname / Server / Virtual Machine / Instance / Workstation Low or Stopped Logs Count"
       }
     ],
