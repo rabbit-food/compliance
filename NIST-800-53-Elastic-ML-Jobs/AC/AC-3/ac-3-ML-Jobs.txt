@@ -50,7 +50,7 @@ POST _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend/_
 
 ---
 
-PUT _ml/anomaly_detectors/ac-3-access-denial-rate-trend
+PUT _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend
 {
   "description": "Monitors for anomalous spikes in access denial events to verify access control enforcement, aligning with AC-3. Partitions anomalies by host to identify specific components with high failure rates.",
   "analysis_config": {
@@ -78,10 +78,12 @@ PUT _ml/anomaly_detectors/ac-3-access-denial-rate-trend
     "rmf"
   ]
 }
-POST _ml/anomaly_detectors/ac-3-access-denial-rate-trend/_open
-PUT _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend
+
+POST _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend/_open
+
+PUT _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend
 {
-  "job_id": "ac-3-access-denial-rate-trend",
+  "job_id": "ac-3-cci-000213-access-denial-rate-trend",
   "indices": [
     "logs-*"
   ],
@@ -97,14 +99,15 @@ PUT _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend
     }
   }
 }
-POST _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend/_start
+
+POST _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend/_start
 
 ---
 
 POST _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend/_stop
-POST _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend/_stop
+POST _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend/_stop
 
 DELETE _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend?force=true
 DELETE _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend?force=true
-DELETE _ml/datafeeds/datafeed-ac-3-access-denial-rate-trend?force=true
-DELETE _ml/anomaly_detectors/ac-3-access-denial-rate-trend?force=true
+DELETE _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend?force=true
+DELETE _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend?force=true

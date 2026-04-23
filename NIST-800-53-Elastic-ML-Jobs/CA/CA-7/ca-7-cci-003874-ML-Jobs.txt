@@ -21,8 +21,6 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job
   "groups": ["rmf"]
 }
 
-POST _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job/_open
-
 PUT _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job
 {
   "job_id": "ca-7-cci-003874-unusual-hostname-change-trend-job",
@@ -40,6 +38,8 @@ PUT _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job
     }
   }
 }
+
+POST _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job/_open
 
 POST _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job/_start
 {
@@ -70,8 +70,6 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job
   "groups": ["rmf"]
 }
 
-POST _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job/_open
-
 PUT _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job
 {
   "job_id": "ca-7-cci-003874-hostname-stop-logs-trend-job",
@@ -89,6 +87,8 @@ PUT _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job
     }
   }
 }
+
+POST _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job/_open
 
 POST _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job/_start
 {
