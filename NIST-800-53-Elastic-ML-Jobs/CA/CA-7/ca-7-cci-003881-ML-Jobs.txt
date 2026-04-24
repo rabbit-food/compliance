@@ -1,0 +1,289 @@
+PUT _ml/anomaly_detectors/ca-7-cci-003881-control-bypass-effectiveness-job
+{
+  "description": "Monitors for rare 'allowed' outcomes on rules that typically block. Aligns with CCI-003881 effectiveness monitoring.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Rare allowed actions per security rule",
+        "function": "rare",
+        "by_field_name": "event.action",
+        "partition_field_name": "rule.name"
+      }
+    ],
+    "influencers": [
+      "rule.name",
+      "host.name",
+      "user.name",
+      "source.ip"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "results_index_name": "shared",
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003881-control-bypass-effectiveness-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003881-control-bypass-effectiveness-job
+{
+  "job_id": "ca-7-cci-003881-control-bypass-effectiveness-job",
+  "indices": [
+    "logs-endpoint.events.*",
+    "logs-network_traffic.*",
+    "filebeat-*"
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        { "term": { "event.kind": "event" } }
+      ],
+      "filter": [
+        {
+          "terms": {
+            "event.action": ["allowed", "success", "permitted", "bypass"]
+          }
+        },
+        {
+          "exists": { "field": "rule.name" }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003881-control-bypass-effectiveness-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003881-control-bypass-effectiveness-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003881-control-bypass-effectiveness-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003881-silent-control-failure-job
+{
+  "description": "Detects a significant drop in control activity (blocks/denies), indicating a silent failure of effectiveness. Aligns with CCI-003881.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "Abnormally low count of security enforcement actions",
+        "function": "low_count",
+        "partition_field_name": "event.dataset"
+      }
+    ],
+    "influencers": [
+      "event.dataset",
+      "rule.name",
+      "host.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "results_index_name": "shared",
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003881-silent-control-failure-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003881-silent-control-failure-job
+{
+  "job_id": "ca-7-cci-003881-silent-control-failure-job",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "terms": {
+            "event.outcome": ["failure", "denied", "blocked"]
+          }
+        },
+        {
+          "exists": { "field": "event.dataset" }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003881-silent-control-failure-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003881-silent-control-failure-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003881-silent-control-failure-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003881-increased-risk-exposure-job
+{
+  "description": "Detects high-entropy/obfuscated strings that may bypass standard control effectiveness. Aligns with CCI-003881 risk monitoring.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "High entropy (obfuscation) in process arguments",
+        "function": "high_info_content",
+        "field_name": "process.command_line",
+        "partition_field_name": "host.os.family"
+      }
+    ],
+    "influencers": [
+      "process.name",
+      "user.name",
+      "host.name",
+      "process.executable"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "256mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "results_index_name": "shared",
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003881-increased-risk-exposure-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003881-increased-risk-exposure-job
+{
+  "job_id": "ca-7-cci-003881-increased-risk-exposure-job",
+  "indices": [
+    "logs-endpoint.events.process-*",
+    "winlogbeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        { "exists": { "field": "process.command_line" } },
+        { "range": { "process.args_count": { "gt": 0 } } }
+      ],
+      "must_not": [
+        { "term": { "event.outcome": "failure" } }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003881-increased-risk-exposure-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003881-increased-risk-exposure-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003881-increased-risk-exposure-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003881-policy-ineffectiveness-job
+{
+  "description": "Monitors the duration of security events. A spike in duration indicates a delay in control response or mitigation effectiveness. Aligns with CCI-003881.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Abnormal increase in mean event duration (latency of mitigation)",
+        "function": "mean",
+        "field_name": "event.duration"
+      }
+    ],
+    "influencers": [
+      "event.action",
+      "host.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "results_index_name": "shared",
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003881-policy-ineffectiveness-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003881-policy-ineffectiveness-job
+{
+  "job_id": "ca-7-cci-003881-policy-ineffectiveness-job",
+  "indices": [
+    "logs-endpoint.events.*",
+    "logs-network_traffic.*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        { "exists": { "field": "event.duration" } },
+        {
+          "terms": {
+            "event.type": ["denied", "change", "end", "deletion"]
+          }
+        }
+      ],
+      "must_not": [
+        { "term": { "event.duration": 0 } }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003881-policy-ineffectiveness-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003881-policy-ineffectiveness-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003881-policy-ineffectiveness-job?force=true
