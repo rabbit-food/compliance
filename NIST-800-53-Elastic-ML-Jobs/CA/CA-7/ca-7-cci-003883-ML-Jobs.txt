@@ -1,0 +1,435 @@
+PUT _ml/anomaly_detectors/ca-7-cci-003883-system-configuration-job
+{
+  "description": "CA-7(4) / CCI-003883: Detects anomalous system configuration changes and rare process executions that impact risk posture.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Rare process execution indicating potential architectural or config change",
+        "function": "rare",
+        "by_field_name": "process.name",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "user.name",
+      "process.executable"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003883-system-configuration-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003883-system-configuration-job
+{
+  "job_id": "ca-7-cci-003883-system-configuration-job",
+  "indices": [
+    "logs-endpoint.events.*",
+    "logs-system.*",
+    "auditbeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": { "event.category": "process" }
+        },
+        {
+          "terms": {
+            "event.type": ["start", "change", "creation"]
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "match_phrase": { "process.executable": "/usr/lib/systemd/systemd" }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003883-system-configuration-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003883-system-configuration-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003883-system-configuration-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003883-threat-landscape-ti-job
+{
+  "description": "CA-7(4) / CCI-003883: Monitors the threat landscape for significant shifts or spikes in threat indicator activity relative to the baseline environment. Use this if you import or pull in Threat Intelligence data that automatically marks the indexes logs-ti*.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "Abnormal spike in threat indicator matches",
+        "function": "high_count"
+      }
+    ],
+    "influencers": [
+      "threat.indicator.name",
+      "threat.indicator.type",
+      "threat.feed.name",
+      "host.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "64mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "custom_settings": {
+    "created_by": "security-compliance-team",
+    "cci_id": "CCI-003883",
+    "control": "CA-7(4)",
+    "monitoring_type": "threat-landscape"
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003883-threat-landscape-ti-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003883-threat-landscape-ti-job
+{
+  "job_id": "ca-7-cci-003883-threat-landscape-ti-job",
+  "indices": [
+    "logs-ti_*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "threat.indicator.name"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "term": {
+            "event.outcome": "failure" 
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003883-threat-landscape-ti-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003883-threat-landscape-ti-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003883-threat-landscape-ti-job?force=true
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003883-threat-landscape-job
+{
+  "description": "CA-7(4) / CCI-003883: Detects anomalous spikes in internal security alerts to monitor shifts in the threat landscape and overall risk posture.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "High count of internal security alerts",
+        "function": "high_count"
+      }
+    ],
+    "influencers": [
+      "kibana.alert.rule.name",
+      "signal.rule.threat.framework",
+      "host.name",
+      "user.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "64mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "custom_settings": {
+    "created_by": "security-compliance-team",
+    "cci_id": "CCI-003883",
+    "control": "CA-7(4)",
+    "monitoring_source": "internal-alerts"
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003883-threat-landscape-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003883-threat-landscape-job
+{
+  "job_id": "ca-7-cci-003883-threat-landscape-job",
+  "indices": [
+    ".alerts-security.alerts-default"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "event.kind": "alert"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "term": {
+            "kibana.alert.status": "recovered"
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003883-threat-landscape-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003883-threat-landscape-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003883-threat-landscape-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003883-personnel-risk-job
+{
+  "description": "CA-7(4) / CCI-003883: Detects anomalous changes in personnel risk posture by monitoring for unusual peaks in group and privilege assignments.",
+  "analysis_config": {
+    "bucket_span": "1h",
+    "detectors": [
+      {
+        "detector_description": "Unusual increase in distinct groups assigned to a user",
+        "function": "distinct_count",
+        "field_name": "group.name",
+        "by_field_name": "user.name"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "group.name",
+      "event.action"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003883-personnel-risk-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003883-personnel-risk-job
+{
+  "job_id": "ca-7-cci-003883-personnel-risk-job",
+  "indices": ["logs-system.*", "logs-okta.*", "logs-azure.*", "filebeat-*"],
+  "query": {
+    "bool": {
+      "filter": [
+        { "exists": { "field": "group.name" } },
+        { "term": { "event.category": "iam" } }
+      ]
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003883-personnel-risk-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003883-personnel-risk-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003883-personnel-risk-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003883-vulnerabilities-job
+{
+  "description": "CA-7(4) / CCI-003883: Detects anomalous increases in cumulative vulnerability severity scores to monitor shifts in system risk posture. Use this if you have enabled a vulnerability management integration (like Tenable, Qualys, or Rapid7) or the Cloud Native Vulnerability Management (CNVM) feature in Elastic 9.x.",
+  "analysis_config": {
+    "bucket_span": "6h",
+    "detectors": [
+      {
+        "detector_description": "High cumulative vulnerability severity score",
+        "function": "high_sum",
+        "field_name": "vulnerability.severity.score",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "vulnerability.id",
+      "vulnerability.category"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003883-vulnerabilities-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003883-vulnerabilities-job
+{
+  "job_id": "ca-7-cci-003883-vulnerabilities-job",
+  "indices": [
+    "logs-vulnerability.*",
+    "filebeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "vulnerability.severity.score"
+          }
+        },
+        {
+          "term": {
+            "event.kind": "enrichment"
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003883-vulnerabilities-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003883-vulnerabilities-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003883-vulnerabilities-job?force=true
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003883-operational-health-job
+{
+  "description": "CA-7(4) / CCI-003883: Detects anomalous drops in security log volume to identify gaps in continuous monitoring coverage and operational risk.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Unexpected drop in security log volume",
+        "function": "low_count",
+        "partition_field_name": "event.dataset"
+      }
+    ],
+    "influencers": [
+      "event.dataset",
+      "agent.type",
+      "host.name"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "analysis_limits": {
+    "model_memory_limit": "128mb"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003883-operational-health-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003883-operational-health-job
+{
+  "job_id": "ca-7-cci-003883-operational-health-job",
+  "indices": [
+    "logs-*",
+    "filebeat-*",
+    "auditbeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "event.dataset"
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000,
+  "chunking_config": {
+    "mode": "auto"
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003883-operational-health-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003883-operational-health-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003883-operational-health-job?force=true

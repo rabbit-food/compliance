@@ -1,0 +1,325 @@
+PUT _ml/anomaly_detectors/ca-7-cci-003882-risk-monitoring-control-drift-job
+{
+  "description": "CA-7(4) Risk Monitoring: Detects failures in mandatory security controls (Control Drift) by identifying unusually low event counts for successful security outcomes.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Unusually low volume of successful control events",
+        "function": "low_count"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "event.provider",
+      "event.dataset",
+      "cloud.provider"
+    ]
+  },
+  "analysis_limits": {
+    "model_memory_limit": "20mb"
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003882-risk-monitoring-control-drift-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003882-risk-monitoring-control-drift-job
+{
+  "job_id": "ca-7-cci-003882-risk-monitoring-control-drift-job",
+  "indices": [
+    "filebeat-*",
+    "logs-endpoint.events.*",
+    "winlogbeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "event.outcome": "success"
+          }
+        },
+        {
+          "exists": {
+            "field": "event.action"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "term": {
+            "event.type": "error"
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003882-risk-monitoring-control-drift-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003882-risk-monitoring-control-drift-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003882-risk-monitoring-control-drift-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003882-escalating-threat-access-job
+{
+  "description": "CA-7(4) Risk Monitoring: Detects evolving threats by identifying spikes in access denied events across users and hosts, indicating potential brute-force or lateral movement risk.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Unusually high count of denied access attempts",
+        "function": "high_count",
+        "partition_field_name": "user.name"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "host.name",
+      "source.ip",
+      "event.action"
+    ]
+  },
+  "analysis_limits": {
+    "model_memory_limit": "30mb"
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "groups": ["compliance", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003882-escalating-threat-access-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003882-escalating-threat-access-job
+{
+  "job_id": "ca-7-cci-003882-escalating-threat-access-job",
+  "indices": [
+    "filebeat-*",
+    "winlogbeat-*",
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "terms": {
+            "event.outcome": ["failure", "denied"]
+          }
+        },
+        {
+          "terms": {
+            "event.category": ["authentication", "iam", "network"]
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "term": {
+            "user.name": "system-account" 
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003882-escalating-threat-access-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003882-escalating-threat-access-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003882-escalating-threat-access-job?force=true
+
+------------------------------------------------------------------------------------------------
+
+PUT _ml/anomaly_detectors/ca-7-cci-003882-data-exfiltration-job
+{
+  "description": "CA-7(4) Risk Monitoring: Detects potential data exfiltration risk by identifying unusually high volumes of outbound network traffic per host.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Unusually high outbound data transfer (bytes)",
+        "function": "high_sum",
+        "field_name": "network.bytes",
+        "partition_field_name": "source.ip"
+      }
+    ],
+    "influencers": [
+      "source.ip",
+      "destination.ip",
+      "network.protocol",
+      "user.name"
+    ]
+  },
+  "analysis_limits": {
+    "model_memory_limit": "40mb"
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "groups": ["data-loss-prevention", "risk-monitoring", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003882-data-exfiltration-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003882-data-exfiltration-job
+{
+  "job_id": "ca-7-cci-003882-data-exfiltration-job",
+  "indices": [
+    "logs-*",
+    "filebeat-*",
+    "packetbeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "network.direction": "outbound"
+          }
+        },
+        {
+          "exists": {
+            "field": "network.bytes"
+          }
+        },
+        {
+          "range": {
+            "destination.port": {
+              "gte": 1 
+            }
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "terms": {
+            "destination.ip": [
+              "10.0.0.0/8",
+              "172.16.0.0/12",
+              "192.168.0.0/16"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003882-data-exfiltration-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003882-data-exfiltration-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003882-data-exfiltration-job?force=true
+
+---
+
+PUT _ml/anomaly_detectors/ca-7-cci-003882-shadow-it-rare-activity-job
+{
+  "description": "CA-7(4) Risk Monitoring: Identifies unvetted risk by detecting rare processes or network destinations that deviate from the established organizational baseline.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Rare process execution on a host",
+        "function": "rare",
+        "by_field_name": "process.name",
+        "partition_field_name": "host.name"
+      },
+      {
+        "detector_description": "Rare outbound network destination",
+        "function": "rare",
+        "by_field_name": "destination.domain",
+        "partition_field_name": "host.name"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "user.name",
+      "process.executable",
+      "destination.ip"
+    ]
+  },
+  "analysis_limits": {
+    "model_memory_limit": "50mb"
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "groups": ["compliance", "risk-monitoring", "shadow-it", "rmf"]
+}
+
+POST _ml/anomaly_detectors/ca-7-cci-003882-shadow-it-rare-activity-job/_open
+
+PUT _ml/datafeeds/datafeed-ca-7-cci-003882-shadow-it-rare-activity-job
+{
+  "job_id": "ca-7-cci-003882-shadow-it-rare-activity-job",
+  "indices": [
+    "logs-endpoint.events.*",
+    "packetbeat-*",
+    "filebeat-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "terms": {
+            "event.category": ["process", "network"]
+          }
+        },
+        {
+          "exists": {
+            "field": "process.name"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "prefix": {
+            "process.executable": "C:\\Windows\\System32\\"
+          }
+        },
+        {
+          "terms": {
+            "destination.domain": ["internal.corp", "localhost"]
+          }
+        }
+      ]
+    }
+  },
+  "scroll_size": 1000
+}
+
+POST _ml/datafeeds/datafeed-ca-7-cci-003882-shadow-it-rare-activity-job/_start
+{
+  "start": "now-7d" 
+}
+
+---
+
+DELETE _ml/anomaly_detectors/ca-7-cci-003882-shadow-it-rare-activity-job?force=true
+DELETE _ml/datafeeds/datafeed-ca-7-cci-003882-shadow-it-rare-activity-job?force=true
