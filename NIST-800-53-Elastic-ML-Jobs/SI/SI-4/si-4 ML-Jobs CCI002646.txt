@@ -92,5 +92,7 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002646-unified-system-monitoring
 
 POST _ml/datafeeds/datafeed-si-4-cci-002646-unified-system-monitoring/_start {"start": "now-2d"}
 
+---
+
 DELETE _ml/datafeeds/datafeed-si-4-cci-002646-unified-system-monitoring?force=true
 DELETE _ml/anomaly_detectors/si-4-cci-002646-unified-system-monitoring?force=true

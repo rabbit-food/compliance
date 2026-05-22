@@ -75,5 +75,7 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use
 
 POST _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use/_start
 
+---
+
 DELETE _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use?force=true
 DELETE _ml/anomaly_detectors/si-4-cci-002645-unauthorized-system-use?force=true
