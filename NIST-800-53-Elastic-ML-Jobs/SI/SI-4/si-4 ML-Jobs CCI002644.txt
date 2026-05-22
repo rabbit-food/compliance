@@ -57,6 +57,8 @@ PUT _ml/anomaly_detectors/si-4-cci-002643-unified-connections
   ]
 }
 POST _ml/anomaly_detectors/si-4-cci-002643-unified-connections/_open
+
+
 PUT _ml/datafeeds/datafeed-si-4-cci-002643-unified-connections
 {
   "job_id": "si-4-cci-002643-unified-connections",
@@ -98,6 +100,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-unified-connections
     }
   }
 }
+
+
 POST _ml/datafeeds/datafeed-si-4-cci-002643-unified-connections/_start
 
 ---
