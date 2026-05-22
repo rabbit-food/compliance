@@ -50,9 +50,9 @@ PUT _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring
 
 POST _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002643-adaptive-threat-monitoring
+PUT _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring
 {
-  "job_id": "si-4-cci-002643-adaptive-threat-monitoring",
+  "job_id": "si-4-cci-002647-adaptive-threat-monitoring",
   "indices": [
     "logs-*"
   ],
@@ -86,9 +86,9 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-adaptive-threat-monitoring
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002643-adaptive-threat-monitoring/_start {"start": "now-2d"}
+POST _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring/_start {"start": "now-2d"}
 
-PUT _watcher/watch/si-4-cci-002643-daily-ml-summary
+PUT _watcher/watch/si-4-cci-002647-daily-ml-summary
 {
   "trigger": {
     "schedule": {
@@ -103,7 +103,7 @@ PUT _watcher/watch/si-4-cci-002643-daily-ml-summary
           "query": {
             "bool": {
               "filter": [
-                { "term": { "job_id": "si-4-cci-002643-adaptive-threat-monitoring" } },
+                { "term": { "job_id": "si-4-cci-002647-adaptive-threat-monitoring" } },
                 { "range": { "anomaly_score": { "gte": 75 } } },
                 { "range": { "timestamp": { "gte": "now-24h" } } }
               ]
@@ -117,7 +117,7 @@ PUT _watcher/watch/si-4-cci-002643-daily-ml-summary
     "email_security_team": {
       "email": {
         "to": [ "soc-tier2@organization.internal", "system-owners@organization.internal" ],
-        "subject": "CCI-002643: Daily Unauthorized Use & Incident Monitoring Report",
+        "subject": "cci-002647: Daily Unauthorized Use & Incident Monitoring Report",
         "body": {
           "text": "The SI-4 ML engine detected {{ctx.payload.hits.total}} critical anomalies (Score >= 75) over the last 24 hours indicating potential unauthorized system use or attack markers. Please check the Kibana Machine Learning Dashboard for full validation."
         }
@@ -128,8 +128,8 @@ PUT _watcher/watch/si-4-cci-002643-daily-ml-summary
 
 ---
 
-DELETE _watcher/watch/si-4-cci-002643-daily-ml-summary
-DELETE _ml/datafeeds/datafeed-si-4-cci-002643-adaptive-threat-monitoring?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002643-adaptive-threat-monitoring?force=true
+DELETE _watcher/watch/si-4-cci-002647-daily-ml-summary
+DELETE _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring?force=true
 
 
