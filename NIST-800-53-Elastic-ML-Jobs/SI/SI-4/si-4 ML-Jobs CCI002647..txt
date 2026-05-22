@@ -1,0 +1,51 @@
+PUT _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring
+{
+  "description": "Strategic and ad-hoc monitoring job to identify indicators of compromise, defense evasion, and unauthorized system use under cci-002647.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "process.name",
+        "over_field_name": "process.parent.name",
+        "detector_description": "Detects anomalous process spawning behaviors (e.g., cmd.exe spawned by webserver - Indicators of Attack)"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "registry.path",
+        "over_field_name": "host.name",
+        "detector_description": "Detects rare registry modifications (Persistence / Defense Evasion attempts)"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "user.name",
+        "over_field_name": "host.name",
+        "detector_description": "First-time or highly unusual interactive user logon to a host (Unauthorized Use Tracking)"
+      },
+      {
+        "function": "high_count",
+        "by_field_name": "process.name",
+        "detector_description": "Anomalous execution rate spikes of highly monitored processes or shell utilities"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "user.name",
+      "process.name",
+      "registry.path"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf",
+    "si-4",
+    "strategic-incident-response"
+  ]
+}
+
+POST _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring/_open

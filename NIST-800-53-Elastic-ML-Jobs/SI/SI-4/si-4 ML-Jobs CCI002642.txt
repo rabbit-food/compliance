@@ -65,6 +65,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging
 
 POST _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging/_start
 
+---
+
 PUT _ml/anomaly_detectors/si-4-cci-002642-host-rare-process
 {
   "description": "Detects malicious host behavior by alerting on highly unusual process executions per system under CCI-002642.",
@@ -126,6 +128,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-host-rare-process
 }
 
 POST _ml/datafeeds/datafeed-si-4-cci-002642-host-rare-process/_start
+
+---
 
 PUT _ml/anomaly_detectors/si-4-cci-002642-auth-bruteforce
 {
@@ -249,6 +253,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-fim-tampering
 
 POST _ml/datafeeds/datafeed-si-4-cci-002642-fim-tampering/_start
 
+---
+
 PUT _ml/anomaly_detectors/si-4-cci-002642-local-connections
 {
   "description": "Monitors local connection activity to detect unauthorized or anomalous local network connections under CCI-002642.",
@@ -320,6 +326,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-local-connections
 }
 
 POST _ml/datafeeds/datafeed-si-4-cci-002642-local-connections/_start
+
+---
 
 DELETE _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging?force=true
 DELETE _ml/anomaly_detectors/si-4-cci-002642-network-exfil-staging?force=true
