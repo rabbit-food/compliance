@@ -1,6 +1,6 @@
-PUT _ml/anomaly_detectors/si-4-cci-002642-network-exfil-staging
+PUT _ml/anomaly_detectors/si-4-cci-002643-network-exfil-staging
 {
-  "description": "Detects anomalies in outbound data volumes and destination ports to catch C2 or exfiltration under CCI-002642.",
+  "description": "Detects anomalies in outbound data volumes and destination ports to catch C2 or exfiltration under cci-002643.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
@@ -34,11 +34,11 @@ PUT _ml/anomaly_detectors/si-4-cci-002642-network-exfil-staging
   ]
 }
 
-POST _ml/anomaly_detectors/si-4-cci-002642-network-exfil-staging/_open
+POST _ml/anomaly_detectors/si-4-cci-002643-network-exfil-staging/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging
+PUT _ml/datafeeds/datafeed-si-4-cci-002643-network-exfil-staging
 {
-  "job_id": "si-4-cci-002642-network-exfil-staging",
+  "job_id": "si-4-cci-002643-network-exfil-staging",
   "indices": [
     "logs-*"
   ],
@@ -63,11 +63,11 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging/_start
+POST _ml/datafeeds/datafeed-si-4-cci-002643-network-exfil-staging/_start
 
-PUT _ml/anomaly_detectors/si-4-cci-002642-host-rare-process
+PUT _ml/anomaly_detectors/si-4-cci-002643-host-rare-process
 {
-  "description": "Detects malicious host behavior by alerting on highly unusual process executions per system under CCI-002642.",
+  "description": "Detects malicious host behavior by alerting on highly unusual process executions per system under cci-002643.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
@@ -96,11 +96,11 @@ PUT _ml/anomaly_detectors/si-4-cci-002642-host-rare-process
   ]
 }
 
-POST _ml/anomaly_detectors/si-4-cci-002642-host-rare-process/_open
+POST _ml/anomaly_detectors/si-4-cci-002643-host-rare-process/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002642-host-rare-process
+PUT _ml/datafeeds/datafeed-si-4-cci-002643-host-rare-process
 {
-  "job_id": "si-4-cci-002642-host-rare-process",
+  "job_id": "si-4-cci-002643-host-rare-process",
   "indices": [
     "logs-*"
   ],
@@ -125,11 +125,11 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-host-rare-process
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002642-host-rare-process/_start
+POST _ml/datafeeds/datafeed-si-4-cci-002643-host-rare-process/_start
 
-PUT _ml/anomaly_detectors/si-4-cci-002642-auth-bruteforce
+PUT _ml/anomaly_detectors/si-4-cci-002643-auth-bruteforce
 {
-  "description": "Detects high rates of authentication failures per user and source IP to spot brute force attempts under CCI-002642.",
+  "description": "Detects high rates of authentication failures per user and source IP to spot brute force attempts under cci-002643.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
@@ -161,11 +161,11 @@ PUT _ml/anomaly_detectors/si-4-cci-002642-auth-bruteforce
   ]
 }
 
-POST _ml/anomaly_detectors/si-4-cci-002642-auth-bruteforce/_open
+POST _ml/anomaly_detectors/si-4-cci-002643-auth-bruteforce/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002642-auth-bruteforce
+PUT _ml/datafeeds/datafeed-si-4-cci-002643-auth-bruteforce
 {
-  "job_id": "si-4-cci-002642-auth-bruteforce",
+  "job_id": "si-4-cci-002643-auth-bruteforce",
   "indices": [
     "logs-*"
   ],
@@ -190,11 +190,13 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-auth-bruteforce
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002642-auth-bruteforce/_start
+POST _ml/datafeeds/datafeed-si-4-cci-002643-auth-bruteforce/_start
 
-PUT _ml/anomaly_detectors/si-4-cci-002642-fim-tampering
+---
+
+PUT _ml/anomaly_detectors/si-4-cci-002643-fim-tampering
 {
-  "description": "Detects unexpected spikes in file integrity modifications to sensitive baseline directories under CCI-002642.",
+  "description": "Detects unexpected spikes in file integrity modifications to sensitive baseline directories under cci-002643.",
   "analysis_config": {
     "bucket_span": "30m",
     "detectors": [
@@ -221,11 +223,11 @@ PUT _ml/anomaly_detectors/si-4-cci-002642-fim-tampering
   ]
 }
 
-POST _ml/anomaly_detectors/si-4-cci-002642-fim-tampering/_open
+POST _ml/anomaly_detectors/si-4-cci-002643-fim-tampering/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002642-fim-tampering
+PUT _ml/datafeeds/datafeed-si-4-cci-002643-fim-tampering
 {
-  "job_id": "si-4-cci-002642-fim-tampering",
+  "job_id": "si-4-cci-002643-fim-tampering",
   "indices": [
     "logs-*"
   ],
@@ -247,11 +249,13 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-fim-tampering
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002642-fim-tampering/_start
+POST _ml/datafeeds/datafeed-si-4-cci-002643-fim-tampering/_start
 
-PUT _ml/anomaly_detectors/si-4-cci-002642-local-connections
+---
+
+PUT _ml/anomaly_detectors/si-4-cci-002643-local-connections
 {
-  "description": "Monitors local connection activity to detect unauthorized or anomalous local network connections under CCI-002642.",
+  "description": "Monitors local connection activity to detect unauthorized or anomalous local network connections under cci-002643.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
@@ -287,11 +291,11 @@ PUT _ml/anomaly_detectors/si-4-cci-002642-local-connections
   ]
 }
 
-POST _ml/anomaly_detectors/si-4-cci-002642-local-connections/_open
+POST _ml/anomaly_detectors/si-4-cci-002643-local-connections/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002642-local-connections
+PUT _ml/datafeeds/datafeed-si-4-cci-002643-local-connections
 {
-  "job_id": "si-4-cci-002642-local-connections",
+  "job_id": "si-4-cci-002643-local-connections",
   "indices": [
     "logs-*"
   ],
@@ -319,15 +323,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-local-connections
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002642-local-connections/_start
+POST _ml/datafeeds/datafeed-si-4-cci-002643-local-connections/_start
 
-DELETE _ml/datafeeds/datafeed-si-4-cci-002642-network-exfil-staging?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002642-network-exfil-staging?force=true
-DELETE _ml/datafeeds/datafeed-si-4-cci-002642-host-rare-process?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002642-host-rare-process?force=true
-DELETE _ml/datafeeds/datafeed-si-4-cci-002642-auth-bruteforce?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002642-auth-bruteforce?force=true
-DELETE _ml/datafeeds/datafeed-si-4-cci-002642-fim-tampering?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002642-fim-tampering?force=true
-DELETE _ml/datafeeds/datafeed-si-4-cci-002642-local-connections?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002642-local-connections?force=true
+---
+
+DELETE _ml/datafeeds/datafeed-si-4-cci-002643-network-exfil-staging?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002643-network-exfil-staging?force=true
+DELETE _ml/datafeeds/datafeed-si-4-cci-002643-host-rare-process?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002643-host-rare-process?force=true
+DELETE _ml/datafeeds/datafeed-si-4-cci-002643-auth-bruteforce?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002643-auth-bruteforce?force=true
+DELETE _ml/datafeeds/datafeed-si-4-cci-002643-fim-tampering?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002643-fim-tampering?force=true
+DELETE _ml/datafeeds/datafeed-si-4-cci-002643-local-connections?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002643-local-connections?force=true

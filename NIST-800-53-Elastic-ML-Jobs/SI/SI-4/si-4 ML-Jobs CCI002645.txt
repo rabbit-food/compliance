@@ -1,0 +1,81 @@
+PUT _ml/anomaly_detectors/si-4-cci-002645-unauthorized-system-use
+{
+  "description": "Detects unauthorized system use by identifying anomalous execution of administrative tools, unapproved out-of-hours activity, and unexpected source locations under cci-002645.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "process.name",
+        "over_field_name": "user.name",
+        "detector_description": "Rare or unauthorized binary execution per individual user account"
+      },
+      {
+        "function": "high_count",
+        "by_field_name": "user.name",
+        "detector_description": "Unexpected spikes in activity volume during non-standard or restricted operating hours"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "source.geo.country_iso_code",
+        "over_field_name": "user.name",
+        "detector_description": "Anomalous user authentication or access from unauthorized/unusual geolocations"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "host.name",
+      "process.name",
+      "source.geo.country_iso_code"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf",
+    "si-4"
+  ]
+}
+
+POST _ml/anomaly_detectors/si-4-cci-002645-unauthorized-system-use/_open
+
+PUT _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use
+{
+  "job_id": "si-4-cci-002645-unauthorized-system-use",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:(process OR authentication) AND event.outcome:success) AND NOT user.name:(\"SYSTEM\" OR \"LOCAL SERVICE\" OR \"NETWORK SERVICE\" OR \"elastic-agent\")"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "process.name": {
+      "type": "keyword"
+    },
+    "source.geo.country_iso_code": {
+      "type": "keyword"
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use/_start
+
+---
+
+DELETE _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002645-unauthorized-system-use?force=true
