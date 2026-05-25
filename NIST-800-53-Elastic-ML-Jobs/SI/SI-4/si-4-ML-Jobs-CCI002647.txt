@@ -88,6 +88,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring
 
 POST _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring/_start {"start": "now-2d"}
 
+---
+
 PUT _watcher/watch/si-4-cci-002647-daily-ml-summary
 {
   "trigger": {
@@ -126,10 +128,48 @@ PUT _watcher/watch/si-4-cci-002647-daily-ml-summary
   }
 }
 
+POST _ml/anomaly_detectors/si-4-cci-002647-daily-ml-summary/_open
+
+PUT _ml/datafeeds/datafeed-si-4-cci-002647-daily-ml-summary
+{
+  "job_id": "si-4-cci-002647-daily-ml-summary",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+      "bool": {
+        "filter": [
+          {
+            "query_string": {
+              "query": """(event.category:(process OR registry) AND event.type:(start OR change OR creation)) OR (event.category:authentication AND logon.type:interactive) AND NOT user.name:("SYSTEM" OR "elastic-agent")"""
+            }
+          }
+        ]
+      }
+  },
+  "runtime_mappings": {
+      "registry.path": {
+        "type": "keyword"
+      },
+      "process.name": {
+        "type": "keyword"
+      },
+      "user.name": {
+        "type": "keyword"
+      },
+      "process.parent.name": {
+        "type": "keyword"
+      },
+      "host.name": {
+        "type": "keyword"
+      }
+  }
+}
+
+POST _ml/datafeeds/datafeed-si-4-cci-002647-daily-ml-summary/_start {"start": "now-2d"}
 ---
 
-DELETE _watcher/watch/si-4-cci-002647-daily-ml-summary
 DELETE _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring?force=true
 DELETE _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring?force=true
-
-
+DELETE _ml/datafeeds/datafeed-si-4-cci-002647-daily-ml-summary?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002647-daily-ml-summary?force=true

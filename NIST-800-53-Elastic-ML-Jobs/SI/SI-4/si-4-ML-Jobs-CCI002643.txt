@@ -65,6 +65,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-network-exfil-staging
 
 POST _ml/datafeeds/datafeed-si-4-cci-002643-network-exfil-staging/_start
 
+---
+
 PUT _ml/anomaly_detectors/si-4-cci-002643-host-rare-process
 {
   "description": "Detects malicious host behavior by alerting on highly unusual process executions per system under cci-002643.",
@@ -126,6 +128,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-host-rare-process
 }
 
 POST _ml/datafeeds/datafeed-si-4-cci-002643-host-rare-process/_start
+
+---
 
 PUT _ml/anomaly_detectors/si-4-cci-002643-auth-bruteforce
 {
