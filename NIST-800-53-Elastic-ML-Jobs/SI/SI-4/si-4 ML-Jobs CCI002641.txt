@@ -127,6 +127,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-host-rare-process
 
 POST _ml/datafeeds/datafeed-si-4-cci-002641-host-rare-process/_start
 
+---
+
 PUT _ml/anomaly_detectors/si-4-cci-002641-auth-bruteforce
 {
   "description": "Detects high rates of authentication failures per user and source IP to spot brute force attempts under CCI-002641.",
@@ -192,6 +194,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-auth-bruteforce
 
 POST _ml/datafeeds/datafeed-si-4-cci-002641-auth-bruteforce/_start
 
+---
+
 PUT _ml/anomaly_detectors/si-4-cci-002641-fim-tampering
 {
   "description": "Detects unexpected spikes in file integrity modifications to sensitive baseline directories under CCI-002641.",
@@ -248,6 +252,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-fim-tampering
 }
 
 POST _ml/datafeeds/datafeed-si-4-cci-002641-fim-tampering/_start
+
+---
 
 DELETE _ml/datafeeds/datafeed-si-4-cci-002641-network-exfil-staging?force=true
 DELETE _ml/anomaly_detectors/si-4-cci-002641-network-exfil-staging?force=true
