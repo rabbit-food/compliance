@@ -1,0 +1,98 @@
+PUT _ml/anomaly_detectors/si-4-cci-002646-unified-system-monitoring
+{
+  "description": "Unified job for cci-002646 tracking unauthorized system use, endpoint/network anomalies, and suspicious privileged activity.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "process.name",
+        "over_field_name": "user.name",
+        "detector_description": "Rare binary execution per user (Unauthorized System Use)"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "process.name",
+        "over_field_name": "host.name",
+        "detector_description": "Unusual process initiating outbound network connections (Endpoint/Network Monitoring)"
+      },
+      {
+        "function": "high_count",
+        "by_field_name": "host.name",
+        "detector_description": "Spike in outbound network connection volume from a single host (Network Beaconing)"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "process.command_line",
+        "over_field_name": "user.name",
+        "detector_description": "Anomalous or rare command string execution (Privileged Activity Monitoring)"
+      },
+      {
+        "function": "high_count",
+        "by_field_name": "user.name",
+        "detector_description": "Abnormal volume spike in elevated privilege actions or configuration changes"
+      }
+    ],
+    "influencers": [
+      "user.name",
+      "host.name",
+      "process.name",
+      "destination.ip"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf",
+    "si-4"
+  ]
+}
+
+POST _ml/anomaly_detectors/si-4-cci-002646-unified-system-monitoring/_open
+
+PUT _ml/datafeeds/datafeed-si-4-cci-002646-unified-system-monitoring
+{
+  "job_id": "si-4-cci-002646-unified-system-monitoring",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:process AND (event.type:start OR privilege.elevated:true)) OR (event.category:network AND network.direction:(outbound OR external) AND NOT destination.ip:(127.0.0.1 OR \"::1\")) AND NOT user.name:(\"SYSTEM\" OR \"LOCAL SERVICE\" OR \"NETWORK SERVICE\" OR \"elastic-agent\")"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "host.name": {
+      "type": "keyword"
+    },
+    "process.name": {
+      "type": "keyword"
+    },
+    "process.command_line": {
+      "type": "keyword"
+    },
+    "destination.ip": {
+      "type": "keyword"
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-si-4-cci-002646-unified-system-monitoring/_start {"start": "now-2d"}
+
+---
+
+DELETE _ml/datafeeds/datafeed-si-4-cci-002646-unified-system-monitoring?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-002646-unified-system-monitoring?force=true
