@@ -196,6 +196,8 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002642-auth-bruteforce
 
 POST _ml/datafeeds/datafeed-si-4-cci-002642-auth-bruteforce/_start
 
+---
+
 PUT _ml/anomaly_detectors/si-4-cci-002642-fim-tampering
 {
   "description": "Detects unexpected spikes in file integrity modifications to sensitive baseline directories under CCI-002642.",
