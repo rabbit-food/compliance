@@ -1,6 +1,6 @@
-PUT _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring
+PUT _ml/anomaly_detectors/si-4-cci-004967-adaptive-threat-monitoring
 {
-  "description": "Strategic and ad-hoc monitoring job to identify indicators of compromise, defense evasion, and unauthorized system use under cci-002647.",
+  "description": "Strategic and ad-hoc monitoring job to identify indicators of compromise, defense evasion, and unauthorized system use under cci-004967.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
@@ -48,11 +48,11 @@ PUT _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring
   ]
 }
 
-POST _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring/_open
+POST _ml/anomaly_detectors/si-4-cci-004967-adaptive-threat-monitoring/_open
 
-PUT _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring
+PUT _ml/datafeeds/datafeed-si-4-cci-004967-adaptive-threat-monitoring
 {
-  "job_id": "si-4-cci-002647-adaptive-threat-monitoring",
+  "job_id": "si-4-cci-004967-adaptive-threat-monitoring",
   "indices": [
     "logs-*"
   ],
@@ -86,9 +86,9 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring
   }
 }
 
-POST _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring/_start {"start": "now-2d"}
+POST _ml/datafeeds/datafeed-si-4-cci-004967-adaptive-threat-monitoring/_start {"start": "now-2d"}
 
 ---
 
-DELETE _ml/datafeeds/datafeed-si-4-cci-002647-adaptive-threat-monitoring?force=true
-DELETE _ml/anomaly_detectors/si-4-cci-002647-adaptive-threat-monitoring?force=true
+DELETE _ml/datafeeds/datafeed-si-4-cci-004967-adaptive-threat-monitoring?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-004967-adaptive-threat-monitoring?force=true
