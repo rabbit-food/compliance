@@ -1,0 +1,94 @@
+PUT _ml/anomaly_detectors/si-4-cci-004967-adaptive-threat-monitoring
+{
+  "description": "Strategic and ad-hoc monitoring job to identify indicators of compromise, defense evasion, and unauthorized system use under cci-004967.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "function": "rare",
+        "by_field_name": "process.name",
+        "over_field_name": "process.parent.name",
+        "detector_description": "Detects anomalous process spawning behaviors (e.g., cmd.exe spawned by webserver - Indicators of Attack)"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "registry.path",
+        "over_field_name": "host.name",
+        "detector_description": "Detects rare registry modifications (Persistence / Defense Evasion attempts)"
+      },
+      {
+        "function": "rare",
+        "by_field_name": "user.name",
+        "over_field_name": "host.name",
+        "detector_description": "First-time or highly unusual interactive user logon to a host (Unauthorized Use Tracking)"
+      },
+      {
+        "function": "high_count",
+        "by_field_name": "process.name",
+        "detector_description": "Anomalous execution rate spikes of highly monitored processes or shell utilities"
+      }
+    ],
+    "influencers": [
+      "host.name",
+      "user.name",
+      "process.name",
+      "registry.path"
+    ]
+  },
+  "data_description": {
+    "time_field": "@timestamp"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": [
+    "rmf",
+    "si-4",
+    "strategic-incident-response"
+  ]
+}
+
+POST _ml/anomaly_detectors/si-4-cci-004967-adaptive-threat-monitoring/_open
+
+PUT _ml/datafeeds/datafeed-si-4-cci-004967-adaptive-threat-monitoring
+{
+  "job_id": "si-4-cci-004967-adaptive-threat-monitoring",
+  "indices": [
+    "logs-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "query_string": {
+            "query": "(event.category:(process OR registry) AND event.type:(start OR change OR creation)) OR (event.category:authentication AND logon.type:interactive) AND NOT user.name:(\"SYSTEM\" OR \"elastic-agent\")"
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "user.name": {
+      "type": "keyword"
+    },
+    "host.name": {
+      "type": "keyword"
+    },
+    "process.name": {
+      "type": "keyword"
+    },
+    "process.parent.name": {
+      "type": "keyword"
+    },
+    "registry.path": {
+      "type": "keyword"
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-si-4-cci-004967-adaptive-threat-monitoring/_start {"start": "now-2d"}
+
+---
+
+DELETE _ml/datafeeds/datafeed-si-4-cci-004967-adaptive-threat-monitoring?force=true
+DELETE _ml/anomaly_detectors/si-4-cci-004967-adaptive-threat-monitoring?force=true
