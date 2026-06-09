@@ -52,6 +52,9 @@ PUT _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend
   }
 }
 POST _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend/_start
+
+---
+
 PUT _ml/anomaly_detectors/au-4-audit-log-backup-trend
 {
   "description": "Detects anomalies in the frequency of audit log backup events, supporting AU-4.",
@@ -103,6 +106,9 @@ PUT _ml/datafeeds/datafeed-au-4-audit-log-backup-trend
   }
 }
 POST _ml/datafeeds/datafeed-au-4-audit-log-backup-trend/_start
+
+---
+
 PUT _ml/anomaly_detectors/au-4-cci-001849-audited-events-trend
 {
   "description": "Detects anomalies in the volume and types of all audited events, supporting CCI-001849.",
@@ -155,6 +161,9 @@ PUT _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend
   }
 }
 POST _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend/_start
+
+---
+
 DELETE _ml/anomaly_detectors/au-4-cci-001848-user-activity-trend?force=true
 DELETE _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend?force=true
 DELETE _ml/anomaly_detectors/au-4-audit-log-backup-trend?force=true

@@ -48,6 +48,8 @@ PUT _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-access-attempts-trend
 }
 POST _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-access-attempts-trend/_start
 
+---
+
 PUT _ml/anomaly_detectors/au-9-cci-000162-000163-000164-failed-access-trend
 {
   "description": "Detects anomalies in modifications or deletions of audit information or logging configuration, relevant to CCI-000163 and CCI-000164.",
@@ -97,6 +99,8 @@ PUT _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-failed-access-trend
 }
 POST _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-failed-access-trend/_start
 
+---
+
 PUT _ml/anomaly_detectors/au-9-cci-001493-unauth-tool-usage-trend
 {
   "description": "Detects anomalies in unauthorized use of audit management tools, relevant to CCI-001493.",
@@ -145,6 +149,7 @@ PUT _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend
 }
 POST _ml/datafeeds/datafeed-au-9-cci-001493-unauth-tool-usage-trend/_start
 
+---
 
 PUT _ml/anomaly_detectors/au-9-cci-001494-001495-audit-mod-del-trend
 {
@@ -197,6 +202,8 @@ PUT _ml/datafeeds/datafeed-au-9-cci-001494-001495-audit-mod-del-trend
 }
 POST _ml/datafeeds/datafeed-au-9-cci-001494-001495-audit-mod-del-trend/_start
 
+---
+
 PUT _ml/anomaly_detectors/au-9-cci-003831-003842-unauth-activity-trend
 {
   "description": "Detects anomalies in unauthorized audit information activity (access, modification, deletion) and potential alerting failures, relevant to CCI-003831 and CCI-003842.",
@@ -247,6 +254,8 @@ PUT _ml/datafeeds/datafeed-au-9-cci-003831-003842-unauth-activity-trend
   }
 }
 POST _ml/datafeeds/datafeed-au-9-cci-003831-003842-unauth-activity-trend/_start
+
+---
 
 DELETE _ml/anomaly_detectors/au-9-cci-000162-000163-000164-access-attempts-trend?force=true
 DELETE _ml/datafeeds/datafeed-au-9-cci-000162-000163-000164-access-attempts-trend?force=true
