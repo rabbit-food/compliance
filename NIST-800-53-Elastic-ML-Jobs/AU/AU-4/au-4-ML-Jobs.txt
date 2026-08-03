@@ -64,7 +64,7 @@ PUT _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend
     }
   }
 }
-POST _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend/_start
+POST _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 
@@ -131,7 +131,7 @@ PUT _ml/datafeeds/datafeed-au-4-audit-log-backup-trend
     }
   }
 }
-POST _ml/datafeeds/datafeed-au-4-audit-log-backup-trend/_start
+POST _ml/datafeeds/datafeed-au-4-audit-log-backup-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 
@@ -199,7 +199,7 @@ PUT _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend
     }
   }
 }
-POST _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend/_start
+POST _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 

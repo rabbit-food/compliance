@@ -1,3 +1,81 @@
+PUT _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend
+{
+  "description": "Detects an abnormally low count of specific event actions, which may indicate a failure to log required events for CCI-000130.",
+  "analysis_config": {
+    "bucket_span": "15m",
+    "detectors": [
+      {
+        "detector_description": "Low count of events by action type",
+        "function": "low_count",
+        "by_field_name": "event.action"
+      }
+    ],    
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
+  },
+  "data_description": {
+    "time_field": "event.ingested"
+  },
+  "model_plot_config": {
+    "enabled": true
+  },
+  "groups": ["rmf"]
+}
+
+POST _ml/anomaly_detectors/au-3-cci-000130-low-event-action-volume-trend/_open
+
+PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
+{
+  "job_id": "au-3-cci-000130-low-event-action-volume-trend",
+  "indices": ["logs-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        { "exists": { "field": "event.action" } },
+        { "exists": { "field": "host.name" } }
+      ],
+      "must_not": [
+        { "term": { "event.action": "" } },
+        { "term": { "event.action": "missing" } },
+        { "term": { "host.name": "" } },
+        { "term": { "host.name": "missing" } }
+      ],
+      "filter": [
+        {
+          "query_string": {
+            "query": "event.module:(auditd OR auditbeat OR sysmon OR system OR security OR powershell OR osquery OR windows OR linux OR aws OR gcp OR azure) OR event.dataset:(*.log OR *.audit OR *.security OR *.system OR *.application OR cloudtrail OR guardduty) OR event.category:(authentication OR configuration OR database OR driver OR file OR host OR iam OR intrusion_detection OR malware OR network OR package OR process OR registry OR session OR threat OR web) OR event.type:(access OR change OR connection OR creation OR deletion OR end OR error OR group OR info OR installation OR modification OR process_started OR protocol OR start OR user)"
+          }
+        }
+      ]
+    }
+  },
+  "delayed_data_check_config": {
+    "enabled": true,
+    "check_window": "1h"
+  }
+}
+
+POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start?start=2025-07-01T00:00:00Z
+
+---
+
 PUT _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend
 {
   "description": "Detects hosts sending logs with timestamps not in UTC, which is a potential violation of CCI-000132.",
@@ -70,6 +148,8 @@ PUT _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend
   }
 }
 
+POST _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend/_start?start=2025-07-01T00:00:00Z
+
 ---
 
 PUT _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend
@@ -139,7 +219,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend/_start?start=now
+POST _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 
@@ -218,7 +298,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend/_start?start=now
+POST _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 
@@ -289,7 +369,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend/_start?start=now
+POST _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 
@@ -361,7 +441,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend/_start?start=now
+POST _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend/_start?start=2025-07-01T00:00:00Z
 
 ---
 
