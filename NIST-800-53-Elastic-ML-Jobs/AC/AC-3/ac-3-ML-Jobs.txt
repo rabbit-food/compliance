@@ -12,9 +12,7 @@ PUT _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend
     "influencers": [
       "user.name",
       "host.composite_id",
-      "source.composite_ip",
-      "process.name",
-      "event.outcome"
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -85,8 +83,6 @@ PUT _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend
     ],
     "influencers": [
       "user.name",
-      "process.name",
-      "event.action",
       "host.composite_id",
       "source.composite_ip"
     ]

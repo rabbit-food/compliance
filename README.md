@@ -11,8 +11,14 @@ This project provides a set of Kibana visualizations, machine learning jobs, and
 
 Check out our [LinkedIn page](https://www.linkedin.com/company/rabbitfooddod) for updates, demo's, and discussion
 
-![Main Dashboard](images/%20Main%20Dashboard%20View.png)
-![Drill Down to CCI View](images/CCI%20View.png)
+Main Dashboard
+![Main Dashboard](images/Original-Main-Dashboard-View.png)
+
+CCI View
+![Drill Down to CCI View](images/CCI-View.png)
+
+Combined Dashboard for group ML Anomalies
+![Generated Dashboard for combined ML Anomaly Listings](images/pm6-combined-ml-anomaly-dashboard.png)
 
 
 ## Disclaimer

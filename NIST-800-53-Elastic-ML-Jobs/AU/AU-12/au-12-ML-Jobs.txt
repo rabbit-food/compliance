@@ -9,7 +9,11 @@ PUT _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate
         "detector_description": "Monitors the overall rate of audit report generation."
       }
     ],
-    "influencers": ["host.name", "user.name", "process.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -26,6 +30,20 @@ PUT _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate
 {
   "job_id": "au-12-cci-000169-audit-report-generation-rate",
   "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -55,7 +73,11 @@ PUT _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change
         "detector_description": "Finds rare configuration change actions, such as updating a trail or modifying an audit rule file."
       }
     ],
-    "influencers": ["host.name", "user.name", "process.name", "process.command_line", "file.path"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -72,6 +94,20 @@ PUT _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change
 {
   "job_id": "au-12-cci-000172-rare-audit-config-change",
   "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -102,7 +138,11 @@ PUT _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift
         "detector_description": "Models the typical set of audit modules (e.g., auditd, sysmon) for each host and finds hosts that deviate from the population's norm."
       }
     ],
-    "influencers": ["host.name", "agent.type"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -119,6 +159,20 @@ PUT _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift
 {
   "job_id": "au-12-cci-001459-audit-configuration-drift",
   "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -147,7 +201,11 @@ PUT _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike
         "detector_description": "Identifies unusually high numbers of failed events."
       }
     ],
-    "influencers": ["host.name", "user.name", "source.ip", "process.executable", "event.action"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -164,6 +222,20 @@ PUT _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike
 {
   "job_id": "au-12-cci-001910-failed-activity-spike",
   "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -194,7 +266,11 @@ PUT _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host
         "detector_description": "Identifies event actions that are uncommon for a specific host, highlighting shifts in behavior."
       }
     ],
-    "influencers": ["host.name", "user.name", "process.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -211,6 +287,20 @@ PUT _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host
 {
   "job_id": "au-12-cci-000171-001910-rare-event-action-by-host",
   "indices": ["logs-*", "filebeat-*", "winlogbeat-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [

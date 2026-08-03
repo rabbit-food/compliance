@@ -8,10 +8,11 @@ PUT _ml/anomaly_detectors/au-4-cci-001848-user-activity-trend
         "function": "count",
         "detector_description": "User activity count"
       }
-    ],
+    ],    
     "influencers": [
       "user.name",
-      "host.name"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -48,6 +49,18 @@ PUT _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend
     },
     "host.name": {
       "type": "keyword"
+    },
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -65,10 +78,11 @@ PUT _ml/anomaly_detectors/au-4-audit-log-backup-trend
         "function": "count",
         "detector_description": "Audit log backup events"
       }
-    ],
+    ],    
     "influencers": [
-      "host.name",
-      "event.outcome"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -102,6 +116,18 @@ PUT _ml/datafeeds/datafeed-au-4-audit-log-backup-trend
   "runtime_mappings": {
     "event.outcome": {
       "type": "keyword"
+    },
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -122,8 +148,9 @@ PUT _ml/anomaly_detectors/au-4-cci-001849-audited-events-trend
       }
     ],
     "influencers": [
-      "event.category",
-      "host.name"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -157,6 +184,18 @@ PUT _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend
   "runtime_mappings": {
     "event.category": {
       "type": "keyword"
+    },
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
