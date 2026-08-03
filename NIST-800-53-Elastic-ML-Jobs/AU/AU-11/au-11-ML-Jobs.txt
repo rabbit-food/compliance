@@ -77,7 +77,7 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job
   }
 }
 
-POST _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job/_start
 
 ---
 
@@ -112,6 +112,8 @@ PUT _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job
     "cci-000167"
   ]
 }
+
+POST _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job/_open
 
 PUT _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job
 {
@@ -158,8 +160,7 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job
   }
 }
 
-POST _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job/_open
-POST _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job/_start
 
 ---
 
@@ -195,6 +196,8 @@ PUT _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job
     "cci-000168"
   ]
 }
+
+POST _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job/_open
 
 PUT _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job
 {
@@ -269,8 +272,7 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job
   }
 }
 
-POST _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job/_open
-POST _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job/_start
 
 ---
 

@@ -72,7 +72,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-3-cci-000130-low-event-action-volume-trend/_start
 
 ---
 
@@ -148,7 +148,7 @@ PUT _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend
   }
 }
 
-POST _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/au-3-cci-000132-non-utc-timestamps-trend/_start
 
 ---
 
@@ -219,7 +219,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-3-cci-000134-missing-event-outcome-trend/_start
 
 ---
 
@@ -298,7 +298,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-3-cci-000131-incomplete-records-trend/_start
 
 ---
 
@@ -369,7 +369,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-3-cci-000133-missing-user-identity-trend/_start
 
 ---
 
@@ -441,7 +441,7 @@ PUT _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-3-cci-001487-missing-required-fields-trend/_start
 
 ---
 

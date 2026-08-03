@@ -57,7 +57,7 @@ PUT _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate
   }
 }
 
-POST _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate/_start
 
 ---
 
@@ -121,7 +121,7 @@ PUT _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change
   }
 }
 
-POST _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change/_start
 
 ---
 
@@ -186,7 +186,7 @@ PUT _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift
   }
 }
 
-POST _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift/_start
 
 ---
 
@@ -249,7 +249,7 @@ PUT _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike
   }
 }
 
-POST _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike/_start
 
 ---
 
@@ -314,7 +314,7 @@ PUT _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host
   }
 }
 
-POST _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-au-12-cci-000171-001910-rare-event-action-by-host/_start
 
 ---
 

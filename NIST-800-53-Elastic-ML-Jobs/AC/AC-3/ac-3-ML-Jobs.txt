@@ -65,7 +65,7 @@ PUT _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend
     }
   }
 }
-POST _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend/_start
 
 ---
 
@@ -140,7 +140,7 @@ PUT _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend
   }
 }
 
-POST _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend/_start?start=2025-07-01T00:00:00Z
+POST _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend/_start
 
 ---
 
