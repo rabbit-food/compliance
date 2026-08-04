@@ -198,7 +198,7 @@ PUT _ml/anomaly_detectors/ir-5-cci-000832-noisy-host-trend
       {
         "function": "high_count",
         "detector_description": "High count of signals from a single host",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [

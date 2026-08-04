@@ -85,7 +85,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000132-non-utc-timestamps-trend
       {
         "detector_description": "Count of non-UTC events by host",
         "function": "count",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [
@@ -161,7 +161,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000134-missing-event-outcome-trend
       {
         "detector_description": "Count of events missing 'event.outcome' by host",
         "function": "count",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [
@@ -233,7 +233,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000131-incomplete-records-trend
         "detector_description": "High percentage of incomplete audit records per host",
         "function": "high_mean",
         "field_name": "missing_field_ratio",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": ["host.name", "event.module", "event.dataset"]
@@ -311,7 +311,7 @@ PUT _ml/anomaly_detectors/au-3-cci-000133-missing-user-identity-trend
       {
         "detector_description": "Count of events missing user identity by host",
         "function": "count",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [
@@ -382,7 +382,7 @@ PUT _ml/anomaly_detectors/au-3-cci-001487-missing-required-fields-trend
       {
         "detector_description": "Count of events missing required fields by host and category",
         "function": "count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "by_field_name": "event.category"
       }
     ],

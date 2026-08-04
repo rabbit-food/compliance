@@ -7,7 +7,7 @@ PUT _ml/anomaly_detectors/pm-4-cci-004326-high-vuln-count-host
     "detectors": [
       {
         "function": "high_count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "detector_description": "High count of open vulnerabilities for a host"
       }
     ],    
@@ -71,7 +71,7 @@ PUT _ml/anomaly_detectors/pm-4-cci-004326-new-critical-high-vuln-spike
     "detectors": [
       {
         "function": "count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "by_field_name": "vulnerability.severity",
         "detector_description": "Count of new critical/high vulnerabilities by host and severity"
       }
@@ -136,7 +136,7 @@ PUT _ml/anomaly_detectors/pm-4-cci-004326-remediation-rate-per-host
     "detectors": [
       {
         "function": "count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "by_field_name": "vulnerability.state",
         "detector_description": "Count of vulnerabilities by state (open/fixed) per host"
       }

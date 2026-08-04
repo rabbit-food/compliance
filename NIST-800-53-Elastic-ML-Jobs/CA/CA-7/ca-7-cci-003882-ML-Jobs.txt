@@ -271,13 +271,13 @@ PUT _ml/anomaly_detectors/ca-7-cci-003882-shadow-it-rare-activity-job
         "detector_description": "Rare process execution on a host",
         "function": "rare",
         "by_field_name": "process.name",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       },
       {
         "detector_description": "Rare outbound network destination",
         "function": "rare",
         "by_field_name": "destination.domain",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [

@@ -262,7 +262,7 @@ PUT _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host
       {
         "function": "rare",
         "by_field_name": "event.action",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "detector_description": "Identifies event actions that are uncommon for a specific host, highlighting shifts in behavior."
       }
     ],
