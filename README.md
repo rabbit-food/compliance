@@ -52,7 +52,6 @@ This repo's tools are primarily designed to assist with Federal compliance **con
 
 ##
 ## Getting Started
-##
 
 ### Prerequisites
 

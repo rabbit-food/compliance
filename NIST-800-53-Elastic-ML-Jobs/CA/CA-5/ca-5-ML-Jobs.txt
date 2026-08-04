@@ -35,6 +35,59 @@ PUT _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend
 POST _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend/_open
 
 
+PUT _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend
+{
+  "job_id": "ca-5-cci-000265-poam-findings-trend",
+  "indices": [
+    "logs-*",
+    "alerts-*",
+    ".alerts-security.alerts-*"
+  ],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "terms": {
+            "event.category": [
+              "vulnerability",
+              "threat",
+              "compliance",
+              "intrusion_detection"
+            ]
+          }
+        },
+        {
+          "terms": {
+            "event.kind": [
+              "alert",
+              "signal"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  }
+}
+
+POST _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend/_start
+{
+  "start": "now-7d"
+}
+
 ---
 
 DELETE _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend?force=true

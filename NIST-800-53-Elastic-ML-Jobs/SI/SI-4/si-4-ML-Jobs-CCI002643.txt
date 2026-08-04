@@ -18,8 +18,9 @@ PUT _ml/anomaly_detectors/si-4-cci-002643-network-exfil-staging
       }
     ],
     "influencers": [
-      "source.ip",
-      "destination.port"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -54,11 +55,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-network-exfil-staging
     }
   },
   "runtime_mappings": {
-    "source.ip": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
     },
-    "destination.port": {
-      "type": "long"
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -81,9 +88,9 @@ PUT _ml/anomaly_detectors/si-4-cci-002643-host-rare-process
       }
     ],
     "influencers": [
-      "host.name",
-      "process.name",
-      "user.name"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -121,8 +128,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-host-rare-process
     "process.name": {
       "type": "keyword"
     },
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -150,7 +166,8 @@ PUT _ml/anomaly_detectors/si-4-cci-002643-auth-bruteforce
     ],
     "influencers": [
       "user.name",
-      "source.ip"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -185,11 +202,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-auth-bruteforce
     }
   },
   "runtime_mappings": {
-    "user.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
     },
-    "source.ip": {
-      "type": "keyword"
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -211,8 +234,9 @@ PUT _ml/anomaly_detectors/si-4-cci-002643-fim-tampering
       }
     ],
     "influencers": [
-      "host.name",
-      "file.path"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -247,8 +271,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-fim-tampering
     }
   },
   "runtime_mappings": {
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -277,10 +310,9 @@ PUT _ml/anomaly_detectors/si-4-cci-002643-local-connections
       }
     ],
     "influencers": [
-      "host.name",
-      "destination.port",
-      "process.name",
-      "user.name"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -315,8 +347,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002643-local-connections
     }
   },
   "runtime_mappings": {
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     },
     "destination.port": {
       "type": "long"

@@ -10,7 +10,11 @@ PUT _ml/anomaly_detectors/ir-5-cci-000832-signals-trend
         "detector_description": "High count of all security signals"
       }
     ],
-    "influencers": ["signal.rule.name", "host.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -26,6 +30,20 @@ PUT _ml/datafeeds/datafeed-ir-5-cci-000832-signals-trend
 {
   "job_id": "ir-5-cci-000832-signals-trend",
   "indices": [".siem-signals*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -56,7 +74,11 @@ PUT _ml/anomaly_detectors/ir-5-cci-000832-severity-trend
         "partition_field_name": "signal.rule.severity"
       }
     ],
-    "influencers": ["host.name", "user.name", "signal.rule.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -72,6 +94,20 @@ PUT _ml/datafeeds/datafeed-ir-5-cci-000832-severity-trend
 {
   "job_id": "ir-5-cci-000832-severity-trend",
   "indices": [".siem-signals*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -101,7 +137,11 @@ PUT _ml/anomaly_detectors/ir-5-cci-000832-triage-backlog-trend
         "detector_description": "High count of open or undocumented signals"
       }
     ],
-    "influencers": ["signal.rule.name", "host.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -117,6 +157,20 @@ PUT _ml/datafeeds/datafeed-ir-5-cci-000832-triage-backlog-trend
 {
   "job_id": "ir-5-cci-000832-triage-backlog-trend",
   "indices": [".siem-signals*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -147,7 +201,11 @@ PUT _ml/anomaly_detectors/ir-5-cci-000832-noisy-host-trend
         "partition_field_name": "host.name"
       }
     ],
-    "influencers": ["signal.rule.name", "user.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -163,6 +221,20 @@ PUT _ml/datafeeds/datafeed-ir-5-cci-000832-noisy-host-trend
 {
   "job_id": "ir-5-cci-000832-noisy-host-trend",
   "indices": [".siem-signals*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
