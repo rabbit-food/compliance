@@ -8,14 +8,14 @@ PUT _ml/anomaly_detectors/si-4-cci-002641-system-monitoring-anomaly-job
         "detector_description": "Detect rare process executions (SI-4 Attack Indicators)",
         "function": "rare",
         "by_field_name": "process.name",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       },
       {
         "detector_description": "Detect anomalous data egress/connections (SI-4 Connections)",
         "function": "high_sum",
         "field_name": "source.bytes",
         "by_field_name": "destination.ip",
-        "partition_field_name": "source.ip"
+        "partition_field_name": "source.composite_ip"
       },
       {
         "detector_description": "Detect spike in authentication failures (SI-4 Attack Indicators)",
@@ -25,10 +25,8 @@ PUT _ml/anomaly_detectors/si-4-cci-002641-system-monitoring-anomaly-job
     ],
     "influencers": [
       "user.name",
-      "host.name",
-      "source.ip",
-      "destination.ip",
-      "process.name"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -94,6 +92,18 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-system-monitoring-anomaly-job
       "script": {
         "source": "if (doc['source.ip'].size() == 0 || doc['destination.ip'].size() == 0) { emit('unknown'); return; } String src = doc['source.ip'].value; String dst = doc['destination.ip'].value; boolean srcInternal = src.startsWith('10.') || src.startsWith('192.168.') || src.startsWith('172.16.'); boolean dstInternal = dst.startsWith('10.') || dst.startsWith('192.168.') || dst.startsWith('172.16.'); if (srcInternal && dstInternal) { emit('east-west'); } else if (srcInternal && !dstInternal) { emit('egress'); } else if (!srcInternal && dstInternal) { emit('ingress'); } else { emit('external-to-external'); }"
       }
+    },
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   },
   "query_delay": "120s",
@@ -115,18 +125,21 @@ PUT _ml/anomaly_detectors/si-4-cci-002641-network-exfil-staging
         "function": "high_sum",
         "field_name": "destination.bytes",
         "by_field_name": "source.ip",
-        "detector_description": "Abnormal volume of outbound traffic per internal source IP"
+        "detector_description": "Abnormal volume of outbound traffic per internal source IP",
+        "partition_field_name": "host.composite_id"
       },
       {
         "function": "high_distinct_count",
         "field_name": "destination.port",
         "by_field_name": "source.ip",
-        "detector_description": "Abnormal connection count to unique destination ports"
+        "detector_description": "Abnormal connection count to unique destination ports",
+        "partition_field_name": "source.composite_ip"
       }
     ],
     "influencers": [
-      "source.ip",
-      "destination.port"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -161,11 +174,20 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-network-exfil-staging
     }
   },
   "runtime_mappings": {
-    "source.ip": {
-      "type": "keyword"
-    },
     "destination.port": {
       "type": "long"
+    },
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -184,13 +206,14 @@ PUT _ml/anomaly_detectors/si-4-cci-002641-host-rare-process
         "function": "rare",
         "by_field_name": "process.name",
         "over_field_name": "host.name",
-        "detector_description": "Rare process execution per individual system host"
+        "detector_description": "Rare process execution per individual system host",
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [
-      "host.name",
-      "process.name",
-      "user.name"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -228,8 +251,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-host-rare-process
     "process.name": {
       "type": "keyword"
     },
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -257,7 +289,8 @@ PUT _ml/anomaly_detectors/si-4-cci-002641-auth-bruteforce
     ],
     "influencers": [
       "user.name",
-      "source.ip"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -292,11 +325,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-auth-bruteforce
     }
   },
   "runtime_mappings": {
-    "user.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
     },
-    "source.ip": {
-      "type": "keyword"
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
@@ -313,13 +352,14 @@ PUT _ml/anomaly_detectors/si-4-cci-002641-fim-tampering
     "detectors": [
       {
         "function": "high_count",
-        "partition_field_name": "host.name",
-        "detector_description": "Spikes in overall file modifications across system baselines"
+        "detector_description": "Spikes in overall file modifications across system baselines",
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [
-      "host.name",
-      "file.path"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -354,8 +394,17 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002641-fim-tampering
     }
   },
   "runtime_mappings": {
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }

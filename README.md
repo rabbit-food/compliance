@@ -11,9 +11,14 @@ This project provides a set of Kibana visualizations, machine learning jobs, and
 
 Check out our [LinkedIn page](https://www.linkedin.com/company/rabbitfooddod) for updates, demo's, and discussion
 
-![Main Dashboard](images/%20Main%20Dashboard%20View.png)
-![Drill Down to CCI View](images/CCI%20View.png)
+## Main Dashboard
+![Main Dashboard](images/Original-Main-Dashboard-View.png)
 
+## CCI View
+![Drill Down to CCI View](images/CCI-View.png)
+
+## Combined Dashboard for group ML Anomalies
+![Generated Dashboard for combined ML Anomaly Listings](images/pm6-combined-ml-anomaly-dashboard.png)
 
 ## Disclaimer
 
@@ -23,7 +28,7 @@ While these dashboards and visualizations are powerful for ongoing assessment, t
 
 ##
 
-### For RMF Compliance Monitoring : How to use these 
+## For RMF Compliance Monitoring : How to use these 
 
 Use as-is. 
 
@@ -33,17 +38,13 @@ While these dashboards and visualizations are powerful for ongoing assessment, t
 
 A description of all dashboads in this github can be found in the file [Content within each Control folder](Content%20within%20each%20Control%20Folder.md) This will describe what each dashboard, ml job, and visualization will provide for each CCI and Control
 
-
-
-### For CMMC Compliance Monitoring : How to use these 
+## For CMMC Compliance Monitoring : How to use these 
 
 Use this: [Protoype CUI Overlay](https://csrc.nist.gov/files/pubs/sp/800/171/r3/fpd/docs/sp800-171r3-fpd-cui-overlay.xlsx)
 
 This repo's tools are primarily designed to assist with Federal compliance **continuous monitoring** and the federal compliance frameworks are all built off of one another. At this time the repo's visualizations are categorized under the format of the RMF but they are VERY similar (basically exact) requirements for CMMC.  The government provided this link to show which RMF ID's match the CMMC ID's. You can use this to connect the RMF format of this repo.
 
-
-
-### For C-SCRM Compliance Monitoring : How to use these 
+## For C-SCRM Compliance Monitoring : How to use these 
 
 Use this: [Protoype CUI Overlay](https://csrc.nist.gov/files/pubs/sp/800/171/r3/fpd/docs/sp800-171r3-fpd-cui-overlay.xlsx)
 
@@ -51,7 +52,6 @@ This repo's tools are primarily designed to assist with Federal compliance **con
 
 ##
 ## Getting Started
-##
 
 ### Prerequisites
 
@@ -87,7 +87,6 @@ The machine learning jobs are provided in `.txt` files. These contain the API ca
 1.  Navigate to **Machine Learning > Anomaly Detection**.
 2.  You should see the newly created jobs in the list.
 3.  Verify that the jobs are running and processing data. It may take some time for the jobs to learn the baseline behavior of your data and produce meaningful results.
-
 
 ## How to Use the Visualizations
 

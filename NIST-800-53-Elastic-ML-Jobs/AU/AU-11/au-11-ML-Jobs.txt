@@ -1,13 +1,3 @@
-# Delete ML Jobs for AU-11 / CCI-000167
-DELETE _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job
-DELETE _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job
-DELETE _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job
-DELETE _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job
-
-# Delete ML Jobs for AU-11 / CCI-000168
-DELETE _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job
-DELETE _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job
-
 # AU-11 / CCI-000167: Audit Record Ingestion Rate Anomaly Detection
 PUT _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job
 {
@@ -22,9 +12,9 @@ PUT _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job
       }
     ],
     "influencers": [
-      "host.name",
-      "event.dataset",
-      "agent.type"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -40,12 +30,28 @@ PUT _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job
   ]
 }
 
+POST _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job/_open
+
 PUT _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job
 {
   "job_id": "au-11-cci-000167-ingestion-rate-job",
   "indices": [
     "logs-*"
   ],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "should": [
@@ -71,7 +77,6 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job
   }
 }
 
-POST _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job/_open
 POST _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job/_start
 
 ---
@@ -90,8 +95,9 @@ PUT _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job
       }
     ],
     "influencers": [
-      "host.name",
-      "event.dataset"
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -107,12 +113,28 @@ PUT _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job
   ]
 }
 
+POST _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job/_open
+
 PUT _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job
 {
   "job_id": "au-11-cci-000167-oldest-record-job",
   "indices": [
     "logs-*"
   ],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "should": [
@@ -138,7 +160,6 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job
   }
 }
 
-POST _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job/_open
 POST _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job/_start
 
 ---
@@ -158,11 +179,9 @@ PUT _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job
       }
     ],
     "influencers": [
-      "host.name",
       "user.name",
-      "file.path",
-      "event.action",
-      "event.type"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -177,6 +196,8 @@ PUT _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job
     "cci-000168"
   ]
 }
+
+POST _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job/_open
 
 PUT _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job
 {
@@ -235,9 +256,32 @@ PUT _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job
     "event.type": {
       "type": "keyword",
       "script": "if (ctx.event?.type != null) { emit(ctx.event.type) } else { emit('unknown') }"
+    },
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
 
-POST _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job/_open
 POST _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job/_start
+
+---
+
+# Delete ML Jobs for AU-11 / CCI-000167
+DELETE _ml/anomaly_detectors/au-11-cci-000167-ingestion-rate-job
+DELETE _ml/datafeeds/datafeed-au-11-cci-000167-ingestion-rate-job
+DELETE _ml/anomaly_detectors/au-11-cci-000167-oldest-record-job
+DELETE _ml/datafeeds/datafeed-au-11-cci-000167-oldest-record-job
+
+# Delete ML Jobs for AU-11 / CCI-000168
+DELETE _ml/anomaly_detectors/au-11-cci-000168-unauth-storage-activity-job
+DELETE _ml/datafeeds/datafeed-au-11-cci-000168-unauth-storage-activity-job

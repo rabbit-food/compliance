@@ -11,10 +11,8 @@ PUT _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend
     ],
     "influencers": [
       "user.name",
-      "host.name",
-      "source.ip",
-      "process.name",
-      "event.outcome"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -34,12 +32,33 @@ PUT _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend
   "indices": [
     "logs-*"
   ],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
         {
           "query_string": {
             "query": "(event.action: (\"session_start\" OR \"user_login\" OR \"user_authentication\" OR \"sudo_start\") OR event.category: (authentication OR session) OR winlog.event_id: (4624 OR 4625 OR 4648 OR 4672)) AND NOT user.name: (root OR *system* OR *administrator* OR \"NT AUTHORITY\\SYSTEM\" OR \"-\" OR *service_account* OR *authorized_user*)"
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "lte": "now"
+            }
           }
         }
       ]
@@ -59,13 +78,13 @@ PUT _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend
       {
         "detector_description": "Count of failed access attempts partitioned by host",
         "function": "count",
-        "partition_field_name": "host.name"
+        "partition_field_name": "host.composite_id"
       }
     ],
     "influencers": [
       "user.name",
-      "process.name",
-      "event.action"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -87,12 +106,33 @@ PUT _ml/datafeeds/datafeed-ac-3-cci-000213-access-denial-rate-trend
   "indices": [
     "logs-*"
   ],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
         {
           "query_string": {
             "query": "event.outcome:failure AND event.category:(authentication OR iam OR file OR process OR network)"
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "lte": "now"
+            }
           }
         }
       ]

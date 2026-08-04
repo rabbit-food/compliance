@@ -7,11 +7,15 @@ PUT _ml/anomaly_detectors/pm-4-cci-004326-high-vuln-count-host
     "detectors": [
       {
         "function": "high_count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "detector_description": "High count of open vulnerabilities for a host"
       }
-    ],
-    "influencers": ["host.name"]
+    ],    
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -27,6 +31,20 @@ PUT _ml/datafeeds/datafeed-pm-4-cci-004326-high-vuln-count-host
 {
   "job_id": "pm-4-cci-004326-high-vuln-count-host",
   "indices": ["logs-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -53,12 +71,16 @@ PUT _ml/anomaly_detectors/pm-4-cci-004326-new-critical-high-vuln-spike
     "detectors": [
       {
         "function": "count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "by_field_name": "vulnerability.severity",
         "detector_description": "Count of new critical/high vulnerabilities by host and severity"
       }
-    ],
-    "influencers": ["host.name", "vulnerability.severity"]
+    ],    
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -74,6 +96,20 @@ PUT _ml/datafeeds/datafeed-pm-4-cci-004326-new-critical-high-vuln-spike
 {
   "job_id": "pm-4-cci-004326-new-critical-high-vuln-spike",
   "indices": ["logs-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [
@@ -100,12 +136,16 @@ PUT _ml/anomaly_detectors/pm-4-cci-004326-remediation-rate-per-host
     "detectors": [
       {
         "function": "count",
-        "partition_field_name": "host.name",
+        "partition_field_name": "host.composite_id",
         "by_field_name": "vulnerability.state",
         "detector_description": "Count of vulnerabilities by state (open/fixed) per host"
       }
-    ],
-    "influencers": ["host.name", "vulnerability.state"]
+    ],    
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -121,6 +161,20 @@ PUT _ml/datafeeds/datafeed-pm-4-cci-004326-remediation-rate-per-host
 {
   "job_id": "pm-4-cci-004326-remediation-rate-per-host",
   "indices": ["logs-*"],
+  "runtime_mappings": {
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
+    }
+  },
   "query": {
     "bool": {
       "filter": [

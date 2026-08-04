@@ -9,8 +9,12 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job
         "by_field_name": "host.name",
         "detector_description": "Hostname / Server / Virtual Machine / Instance / Workstation Change Count"
       }
-    ],
-    "influencers": ["host.name"]
+    ],    
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -20,6 +24,8 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job
   },
   "groups": ["rmf"]
 }
+
+POST _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job/_open
 
 PUT _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job
 {
@@ -33,13 +39,20 @@ PUT _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job
     }
   },
   "runtime_mappings": {
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
-
-POST _ml/anomaly_detectors/ca-7-cci-003874-unusual-hostname-change-trend-job/_open
 
 POST _ml/datafeeds/datafeed-ca-7-cci-003874-unusual-hostname-change-trend-job/_start
 {
@@ -59,7 +72,11 @@ PUT _ml/anomaly_detectors/ca-7-cci-003874-hostname-stop-logs-trend-job
         "detector_description": "Hostname / Server / Virtual Machine / Instance / Workstation Low or Stopped Logs Count"
       }
     ],
-    "influencers": ["host.name"]
+    "influencers": [
+      "user.name",
+      "host.composite_id",
+      "source.composite_ip"
+    ]
   },
   "data_description": {
     "time_field": "@timestamp"
@@ -82,8 +99,17 @@ PUT _ml/datafeeds/datafeed-ca-7-cci-003874-hostname-stop-logs-trend-job
     }
   },
   "runtime_mappings": {
-    "host.name": {
-      "type": "keyword"
+    "host.composite_id": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+      }
+    },
+    "source.composite_ip": {
+      "type": "keyword",
+      "script": {
+        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+      }
     }
   }
 }
