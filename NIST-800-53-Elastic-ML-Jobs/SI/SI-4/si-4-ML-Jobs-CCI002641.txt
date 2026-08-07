@@ -1,7 +1,7 @@
 PUT _ml/anomaly_detectors/si-4-cci-002641-system-monitoring-anomaly-job
 {
-    "description": "RMF Rev 5 SI-4 / CCI-002641: System Monitoring ML Job. Detects anomalous network connections, rare process executions, and authentication spikes across system boundaries.",
-    "analysis_config": {
+  "description": "System Monitoring ML Job. Detects anomalous network connections, rare process executions, and authentication spikes across system boundaries.",
+  "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
       {

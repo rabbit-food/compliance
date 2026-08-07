@@ -1,6 +1,6 @@
 PUT _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate
 {
-  "description": "Detects anomalies in the rate of audit report generation, relevant to CCI-000169 which requires providing audit reports to designated personnel. [cite: 29, 31]",
+  "description": "Detects anomalies in the rate of audit report generation, relevant to CCI-000169 which requires providing audit reports to designated personnel.",
   "analysis_config": {
     "bucket_span": "1h",
     "detectors": [
@@ -21,7 +21,7 @@ PUT _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate
   "model_plot_config": {
     "enabled": true
   },
-  "groups": ["rmf", "au-12"]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/au-12-cci-000169-audit-report-generation-rate/_open
@@ -63,7 +63,7 @@ POST _ml/datafeeds/datafeed-au-12-cci-000169-audit-report-generation-rate/_start
 
 PUT _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change
 {
-  "description": "Detects rare audit policy or configuration change events. This is critical for CCI-000172, which requires adjusting audit levels in response to risk. [cite: 64, 83]",
+  "description": "Detects rare audit policy or configuration change events. This is critical for CCI-000172, which requires adjusting audit levels in response to risk.",
   "analysis_config": {
     "bucket_span": "1h",
     "detectors": [
@@ -85,7 +85,7 @@ PUT _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change
   "model_plot_config": {
     "enabled": true
   },
-  "groups": ["rmf", "au-12"]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/au-12-cci-000172-rare-audit-config-change/_open
@@ -127,7 +127,7 @@ POST _ml/datafeeds/datafeed-au-12-cci-000172-rare-audit-config-change/_start
 
 PUT _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift
 {
-  "description": "Detects hosts with an unusual combination of audit modules compared to the population, identifying configuration drift relevant to CCI-001459 (central management of audit records). [cite: 98, 108]",
+  "description": "Detects hosts with an unusual combination of audit modules compared to the population, identifying configuration drift relevant to CCI-001459 (central management of audit records).",
   "analysis_config": {
     "bucket_span": "24h",
     "detectors": [
@@ -150,7 +150,7 @@ PUT _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift
   "model_plot_config": {
     "enabled": true
   },
-  "groups": ["rmf", "au-12"]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/au-12-cci-001459-audit-configuration-drift/_open
@@ -192,7 +192,7 @@ POST _ml/datafeeds/datafeed-au-12-cci-001459-audit-configuration-drift/_start
 
 PUT _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike
 {
-  "description": "Detects unusual spikes in failed activities, supporting CCI-001910 by helping analysts find inappropriate or unusual activity. [cite: 127, 129]",
+  "description": "Detects unusual spikes in failed activities, supporting CCI-001910 by helping analysts find inappropriate or unusual activity.",
   "analysis_config": {
     "bucket_span": "15m",
     "detectors": [
@@ -213,7 +213,7 @@ PUT _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike
   "model_plot_config": {
     "enabled": true
   },
-  "groups": ["rmf", "au-12"]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/au-12-cci-001910-failed-activity-spike/_open
@@ -255,7 +255,7 @@ POST _ml/datafeeds/datafeed-au-12-cci-001910-failed-activity-spike/_start
 
 PUT _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host
 {
-  "description": "Detects rare event actions on a per-host basis. Supports on-demand analysis (CCI-000171) and finding unusual activity (CCI-001910). [cite: 45, 122]",
+  "description": "Detects rare event actions on a per-host basis. Supports on-demand analysis (CCI-000171) and finding unusual activity (CCI-001910).",
   "analysis_config": {
     "bucket_span": "1h",
     "detectors": [
@@ -278,7 +278,7 @@ PUT _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host
   "model_plot_config": {
     "enabled": true
   },
-  "groups": ["rmf", "au-12"]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/au-12-cci-000171-001910-rare-event-action-by-host/_open

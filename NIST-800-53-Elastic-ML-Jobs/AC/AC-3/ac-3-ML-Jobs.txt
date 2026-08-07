@@ -21,9 +21,7 @@ PUT _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend
   "model_plot_config": {
     "enabled": true
   },
-  "groups": [
-    "rmf"
-  ]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 POST _ml/anomaly_detectors/ac-3-cci-000213-unauthorized-access-attempts-trend/_open
 PUT _ml/datafeeds/datafeed-ac-3-cci-000213-unauthorized-access-attempts-trend
@@ -93,9 +91,7 @@ PUT _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend
   "model_plot_config": {
     "enabled": true
   },
-  "groups": [
-    "rmf"
-  ]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/ac-3-cci-000213-access-denial-rate-trend/_open
