@@ -63,13 +63,13 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use
     "host.composite_id": {
       "type": "keyword",
       "script": {
-        "source": "if (doc.containsKey('host.id') && doc['host.id'].size() > 0) { emit(doc['host.id'].value); return; } String cloud = (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) ? doc['cloud.account.id'].value : 'onprem'; String name = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; emit(cloud + ':' + name);"
+        "source": "String hostName = (doc.containsKey('host.name') && doc['host.name'].size() > 0) ? doc['host.name'].value : 'unknown-host'; if (doc.containsKey('agent.id') && doc['agent.id'].size() > 0) { emit(doc['agent.id'].value + '|' + hostName); return; } if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { emit('cloud:' + doc['cloud.account.id'].value + '|' + hostName); return; } String netContext = 'onprem-default'; if (doc.containsKey('network.name') && doc['network.name'].size() > 0) { netContext = doc['network.name'].value; } else if (doc.containsKey('observer.name') && doc['observer.name'].size() > 0) { netContext = doc['observer.name'].value; } else if (doc.containsKey('host.domain') && doc['host.domain'].size() > 0) { netContext = doc['host.domain'].value; } emit('net:' + netContext + '|' + hostName);"
       }
     },
     "source.composite_ip": {
       "type": "keyword",
       "script": {
-        "source": "if (doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; String context = 'onprem'; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { context = doc['cloud.account.id'].value; } else if (doc.containsKey('cloud.region') && doc['cloud.region'].size() > 0) { context = doc['cloud.region'].value; } emit(context + ':' + ip);"
+        "source": "if (!doc.containsKey('source.ip') || doc['source.ip'].size() == 0) { emit('unknown-ip'); return; } String ip = doc['source.ip'].value; if (doc.containsKey('cloud.account.id') && doc['cloud.account.id'].size() > 0) { emit('cloud:' + doc['cloud.account.id'].value + '|' + ip); return; } String netContext = 'onprem-default'; if (doc.containsKey('network.name') && doc['network.name'].size() > 0) { netContext = doc['network.name'].value; } else if (doc.containsKey('observer.name') && doc['observer.name'].size() > 0) { netContext = doc['observer.name'].value; } emit('net:' + netContext + '|' + ip);"
       }
     },
     "process.name": {
@@ -82,6 +82,9 @@ PUT _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use
 }
 
 POST _ml/datafeeds/datafeed-si-4-cci-002645-unauthorized-system-use/_start
+{
+  "start": "now-90d" 
+}
 
 ---
 
