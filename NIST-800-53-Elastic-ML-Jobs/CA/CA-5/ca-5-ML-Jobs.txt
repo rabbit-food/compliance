@@ -82,7 +82,7 @@ PUT _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend
 
 POST _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend/_start
 {
-  "start": "now-7d"
+  "start": "now-90d" 
 }
 
 ---
