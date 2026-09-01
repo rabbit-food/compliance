@@ -71,7 +71,7 @@ POST _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend/_start
 
 ---
 
-PUT _ml/anomaly_detectors/au-4-audit-log-backup-trend
+PUT _ml/anomaly_detectors/au-4-cci-001849-audit-log-backup-trend
 {
   "description": "Detects anomalies in the frequency of audit log backup events, supporting AU-4.",
   "analysis_config": {
@@ -98,10 +98,10 @@ PUT _ml/anomaly_detectors/au-4-audit-log-backup-trend
     "rmf"
   ]
 }
-POST _ml/anomaly_detectors/au-4-audit-log-backup-trend/_open
-PUT _ml/datafeeds/datafeed-au-4-audit-log-backup-trend
+POST _ml/anomaly_detectors/au-4-cci-001849-audit-log-backup-trend/_open
+PUT _ml/datafeeds/datafeed-au-4-cci-001849-audit-log-backup-trend
 {
-  "job_id": "au-4-audit-log-backup-trend",
+  "job_id": "au-4-cci-001849-audit-log-backup-trend",
   "indices": [
     "logs-*"
   ],
@@ -134,7 +134,7 @@ PUT _ml/datafeeds/datafeed-au-4-audit-log-backup-trend
     }
   }
 }
-POST _ml/datafeeds/datafeed-au-4-audit-log-backup-trend/_start
+POST _ml/datafeeds/datafeed-au-4-cci-001849-audit-log-backup-trend/_start
 {
   "start": "now-90d" 
 }
@@ -214,7 +214,7 @@ POST _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend/_start
 
 DELETE _ml/anomaly_detectors/au-4-cci-001848-user-activity-trend?force=true
 DELETE _ml/datafeeds/datafeed-au-4-cci-001848-user-activity-trend?force=true
-DELETE _ml/anomaly_detectors/au-4-audit-log-backup-trend?force=true
-DELETE _ml/datafeeds/datafeed-au-4-audit-log-backup-trend?force=true
+DELETE _ml/anomaly_detectors/au-4-cci-001849-audit-log-backup-trend?force=true
+DELETE _ml/datafeeds/datafeed-au-4-cci-001849-audit-log-backup-trend?force=true
 DELETE _ml/anomaly_detectors/au-4-cci-001849-audited-events-trend?force=true
 DELETE _ml/datafeeds/datafeed-au-4-cci-001849-audited-events-trend?force=true
