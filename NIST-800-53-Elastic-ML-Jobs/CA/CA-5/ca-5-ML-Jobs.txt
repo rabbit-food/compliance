@@ -15,10 +15,9 @@ PUT _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend
       }
     ],
     "influencers": [
-      "host.name",
       "user.name",
-      "event.category",
-      "rule.name"
+      "host.composite_id",
+      "source.composite_ip"
     ]
   },
   "data_description": {
@@ -27,9 +26,7 @@ PUT _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend
   "model_plot_config": {
     "enabled": true
   },
-  "groups": [
-    "rmf"
-  ]
+  "groups": ["rmf", "security", "openrmfpro"]
 }
 
 POST _ml/anomaly_detectors/ca-5-cci-000265-poam-findings-trend/_open
@@ -85,7 +82,7 @@ PUT _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend
 
 POST _ml/datafeeds/datafeed-ca-5-cci-000265-poam-findings-trend/_start
 {
-  "start": "now-7d"
+  "start": "now-90d" 
 }
 
 ---
